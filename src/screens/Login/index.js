@@ -23,12 +23,13 @@ export default function Login({ navigation }) {
 
   async function login(data) {
     try {
-        await api.post('/usuarios', data);
-        const jsonValue = JSON.stringify(data)
+        console.log(data);
+        await api.post('/login', data);
+        const jsonValue = JSON.stringify(data);
         await AsyncStorage.setItem('@storage_Key', jsonValue);
+        navigation.navigate('Home');
       } catch (err) {
         console.log(err);
-        toast.error('Erro ao carregar os dados, tente novamente');
       }
   
   }
@@ -57,7 +58,7 @@ export default function Login({ navigation }) {
             />
           </Email>
         )}
-        name="email"
+        name="user_email"
         rules={{ required: true }}
         defaultValue=""
       />
@@ -83,7 +84,7 @@ export default function Login({ navigation }) {
             />
           </Senha>
         )}
-        name="password"
+        name="user_senha"
         rules={{ required: true }}
         defaultValue=""
       />

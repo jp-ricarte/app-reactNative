@@ -27,19 +27,7 @@ const HomeStackNavigator = ({ navigation }) => {
   return (
     <>
       <Stack.Navigator screenOptions={screenOptionStyle}>
-        <Stack.Screen
-          options={{
-            headerLeft: () => (
-              <Button
-                onPress={() => navigation.openDrawer()}
-                title="&#9776;"
-                color="#01a862"
-              />
-            ),
-          }}
-          name="Home"
-          component={Home}
-        />
+        <Stack.Screen name="Home" component={Home} />
       </Stack.Navigator>
     </>
   );
@@ -49,19 +37,7 @@ const ItensStackNavigator = ({ navigation }) => {
   return (
     <>
       <Stack.Navigator screenOptions={screenOptionStyle}>
-        <Stack.Screen
-          options={{
-            headerLeft: () => (
-              <Button
-                onPress={() => navigation.openDrawer()}
-                title="&#9776;"
-                color="#01a862"
-              />
-            ),
-          }}
-          name="Itens"
-          component={Itens}
-        />
+        <Stack.Screen name="Itens" component={Itens} />
       </Stack.Navigator>
     </>
   );
