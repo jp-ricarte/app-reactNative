@@ -24,7 +24,8 @@ export default function Login({ navigation }) {
   async function login(data) {
     try {
         await api.post('/usuarios', data);
-        await AsyncStorage.setItem('@storage_Key', data);
+        const jsonValue = JSON.stringify(data)
+        await AsyncStorage.setItem('@storage_Key', jsonValue);
       } catch (err) {
         console.log(err);
         toast.error('Erro ao carregar os dados, tente novamente');
@@ -87,7 +88,7 @@ export default function Login({ navigation }) {
         defaultValue=""
       />
       <ViewButton>
-        <ButtonLogin title="Submit" onPress={handleSubmit(onSubmit)}>
+        <ButtonLogin title="Submit" onPress={handleSubmit(login)}>
           <TextLogin>Entrar</TextLogin>
         </ButtonLogin>
       </ViewButton>

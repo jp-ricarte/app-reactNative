@@ -38,7 +38,12 @@ const screenOptionStyle = {
  
 export default function App() {
   const [signIn, setSignIn] = useState(false);
-  const login = await AsyncStorage.getItem('@storage_Key')
+
+  async function getStore() {
+    const login = await AsyncStorage.getItem('@storage_Key');
+    setSignIn(login);
+    console.log(signIn); 
+  }
   return (
     <>
       <Provider store={store}>
