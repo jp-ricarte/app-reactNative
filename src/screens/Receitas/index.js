@@ -24,7 +24,6 @@ import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 
 export default function Receitas({ navigation, itens, addItem }) {
-  const dispatch = useDispatch();
 
   const { control, handleSubmit, errors } = useForm();
   const [modalVisible, setModalVisible] = useState(false);

@@ -55,7 +55,6 @@ export default function App() {
     getStore();
   });
 
-
   return (
     <>
       <Provider store={store}>
@@ -79,9 +78,6 @@ export default function App() {
                       } else if (route.name === 'Configurações') {
                         iconName = 'cog';
                       }
-
-
-
                       return <Icon name={iconName} size={size} color={color} />;
                     },
                     tabBarInactiveTintColor: 'gray',
