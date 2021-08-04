@@ -1,6 +1,6 @@
 import axios from "axios";
 
 export default axios.create({
-  //baseURL: "https://vittar-fl-back-teste.herokuapp.com/products",
-  baseURL: "http://localhost:3333"
+  baseURL: "https://grafica-back.herokuapp.com",
+  //baseURL: "http://localhost:3333"
 });

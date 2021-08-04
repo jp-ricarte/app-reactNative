@@ -17,13 +17,13 @@ import {
   Forms,
   ModalIten,
   CardItem,
+  ButtonAdd
 } from "./styles";
 
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
-import ItensActions from "../../store/ducks/itens";
 
-function Itens({ navigation, itens, addItem }) {
+export default function Receitas({ navigation, itens, addItem }) {
   const dispatch = useDispatch();
 
   const { control, handleSubmit, errors } = useForm();
@@ -33,7 +33,7 @@ function Itens({ navigation, itens, addItem }) {
   //
   // });
 
-  function onSubmit(data) {
+  function post(data) {
     try {
       console.log(data);
 
@@ -108,12 +108,3 @@ function Itens({ navigation, itens, addItem }) {
     </ScrollView>
   );
 }
-
-const mapStateToProps = (state) => ({
-  itens: state.itens,
-});
-
-const mapDispatchToProps = (dispatch) =>
-  bindActionCreators(ItensActions, dispatch);
-
-export default connect(mapStateToProps, mapDispatchToProps)(Itens);

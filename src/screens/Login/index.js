@@ -23,15 +23,15 @@ export default function Login({ navigation }) {
 
   async function login(data) {
     try {
-        console.log(data);
-        await api.post('/login', data);
-        const jsonValue = JSON.stringify(data);
-        await AsyncStorage.setItem('@storage_Key', jsonValue);
-        navigation.navigate('Home');
-      } catch (err) {
-        console.log(err);
-      }
-  
+      console.log(data);
+      await api.post('/login', data);
+      const jsonValue = JSON.stringify(data);
+      await AsyncStorage.setItem('@storage_Key', jsonValue);
+      navigation.navigate('Home');
+    } catch (err) {
+      console.log(err.response.data);
+    }
+
   }
 
   function hideHidePassword() {
@@ -40,22 +40,13 @@ export default function Login({ navigation }) {
 
   return (
     <Container>
-      <Image source={require('../../images/ricarte.jpeg')} style={{width: '75%', height: 130, resizeMode : 'stretch', marginBottom: 20}} />
+      <Image source={require('../../images/ricarte.jpeg')} style={{ width: '75%', height: 130, resizeMode: 'stretch', marginBottom: 20 }} />
       <Controller
         control={control}
         render={({ onChange, onBlur, value }) => (
           <Email>
-            <Icon
-              name="mail-outline"
-              size={20}
-              color="rgba(255, 255, 255, 0.6)"
-            />
-            <TextInputStyled
-              onBlur={onBlur}
-              placeholder="E-mail"
-              onChangeText={(value) => onChange(value)}
-              value={value}
-            />
+            <Icon name="mail-outline" size={20} color="rgba(255, 255, 255, 0.6)" />
+            <TextInputStyled onBlur={onBlur} placeholder="E-mail" onChangeText={(value) => onChange(value)} value={value} />
           </Email>
         )}
         name="user_email"
@@ -68,20 +59,8 @@ export default function Login({ navigation }) {
         render={({ onChange, onBlur, value }) => (
           <Senha>
             <Icon name="lock" size={20} color="rgba(255, 255, 255, 0.6)" />
-            <TextInputStyled
-              onBlur={onBlur}
-              placeholder="senha"
-              onChangeText={(value) => onChange(value)}
-              value={value}
-              secureTextEntry={hide ? true : false}
-            />
-
-            <Icon
-              onPress={hideHidePassword}
-              name={hide ? "visibility-off" : "visibility"}
-              size={20}
-              color="rgba(255, 255, 255, 0.9)"
-            />
+            <TextInputStyled onBlur={onBlur} placeholder="senha" onChangeText={(value) => onChange(value)} value={value} secureTextEntry={hide ? true : false} />
+            <Icon onPress={hideHidePassword} name={hide ? "visibility-off" : "visibility"} size={20} color="rgba(255, 255, 255, 0.9)" />
           </Senha>
         )}
         name="user_senha"
