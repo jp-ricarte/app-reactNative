@@ -10,7 +10,6 @@ import {
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { useForm, Controller } from "react-hook-form";
 import {
-  Container,
   Texto,
   TextCard,
   TextInputStyled,
@@ -19,6 +18,9 @@ import {
   CardItem,
   ButtonAdd
 } from "./styles";
+
+import { Container } from "../../../global";
+
 
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";

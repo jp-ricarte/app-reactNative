@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { useDispatch } from "react-redux";
 import {
   Button,
   Alert,
@@ -19,11 +18,8 @@ import {
   CardItem,
 } from "../Receitas/styles";
  
-import { bindActionCreators } from "redux";
-import { connect } from "react-redux";
 
 export default function Despesas({ navigation }) {
-  const dispatch = useDispatch();
 
   const { control, handleSubmit, errors } = useForm();
   const [modalVisible, setModalVisible] = useState(false);

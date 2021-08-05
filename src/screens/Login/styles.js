@@ -1,14 +1,5 @@
 import styled from "styled-components/native";
 
-export const Container = styled.View`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #fff;
-  width: 100%;
-  height: 100%;
-`;
-
 export const Titulo = styled.Text`
   display: flex;
   text-align: center;

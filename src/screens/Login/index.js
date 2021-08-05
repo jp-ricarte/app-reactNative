@@ -4,7 +4,6 @@ import Icon from "react-native-vector-icons/MaterialIcons";
 import { useForm, Controller } from "react-hook-form";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
-  Container,
   TextInputStyled,
   Email,
   Senha,
@@ -13,6 +12,8 @@ import {
   TextLogin,
   Titulo,
 } from "./styles";
+
+import { Container } from '../../../global';
 
 import { useState } from "react/cjs/react.development";
 import api from "../../services/api";
@@ -27,7 +28,7 @@ export default function Login({ navigation }) {
       await api.post('/login', data);
       const jsonValue = JSON.stringify(data);
       await AsyncStorage.setItem('@storage_Key', jsonValue);
-      navigation.navigate('Home');
+      navigation.navigate('Home', {screen: 'Home'});
     } catch (err) {
       console.log(err.response.data);
     }

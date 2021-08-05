@@ -12,11 +12,10 @@ import { PersistGate } from "redux-persist/integration/react";
 import Login from "./src/screens/Login/index";
 import Home from "./src/screens/Home/index";
 import Receitas from "./src/screens/Receitas/index";
-import Despesas from "./src/screens/Despesas/index";
+import Despesas from "./src/screens/Despesas/index";  
+import Configurações from "./src/screens/Configurações/index";
 import { ScrollView } from "react-native";
 
-import { HomeStackNavigator } from "./src/components/Navigation/index";
-import { store, persistor } from "./src/store";
 import Icon from "react-native-vector-icons/FontAwesome5";
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -57,8 +56,6 @@ export default function App() {
 
   return (
     <>
-      <Provider store={store}>
-        <PersistGate persistor={persistor}>
           <NavigationContainer>
             {signIn ? (
               <>
@@ -87,7 +84,7 @@ export default function App() {
                   <Tab.Screen name="Receitas" component={Receitas} />
                   <Tab.Screen name="Despesas" component={Despesas} />
                   <Tab.Screen name="Categorias" component={Despesas} />
-                  <Tab.Screen name="Configurações" component={Despesas} />
+                  <Tab.Screen name="Configurações" component={Configurações} />
                 </Tab.Navigator>
               </>
             ) : (
@@ -100,8 +97,6 @@ export default function App() {
               </Stack.Navigator>
             )}
           </NavigationContainer>
-        </PersistGate>
-      </Provider>
     </>
   );
 }
