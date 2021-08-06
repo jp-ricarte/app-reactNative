@@ -3,10 +3,6 @@ import { Text, View, TextInput, Button, Alert, Image } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { useForm, Controller } from "react-hook-form";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useDispatch } from "react-redux";
-import { salvarUser } from "../../store/modules/user/actions";
-
-
 import {
   TextInputStyled,
   Email,
@@ -21,27 +17,21 @@ import { Container } from '../../../global';
 
 import { useState } from "react/cjs/react.development";
 import api from "../../services/api";
-import useForceUpdate from 'use-force-update';
-import { store } from "../../store";
 
 export default function Login({ navigation }) {
-  const dispatch = useDispatch();
-  const { user } = store.getState().user;
   const { control, handleSubmit, errors } = useForm();
   const [hide, sethide] = useState(true);
 
-
   async function login(data) {
-    try {
       await api.post('/login', data).then((response) => {
-        console.log(response)
+        if (response.data.loggedIn) {
+          navigation.navigate('HomeTabs');
+          const jsonValue = JSON.stringify(data);
+          AsyncStorage.setItem('@storage_Key', jsonValue);
+        } else {
+          alert('E-mail ou senha inválidos!');      
+        }
       });
-      dispatch(salvarUser(data));
-      navigation.navigate('HomeTabs');
-    } catch (err) {
-      console.log(err);
-    }
-
   }
 
   function hideHidePassword() {

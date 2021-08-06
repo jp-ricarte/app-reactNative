@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useDispatch } from "react-redux";
 
 import { Provider } from "react-redux";
 import { NavigationContainer } from "@react-navigation/native";
@@ -8,6 +9,8 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import { PersistGate } from "redux-persist/integration/react";
+
+import { HomeTabs } from './src/components/Navigation/index'
 
 import Login from "./src/screens/Login/index";
 import Home from "./src/screens/Home/index";
@@ -19,6 +22,7 @@ import { ScrollView } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome5";
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { store, persistor } from "./src/store";
 
 import NetInfo from "@react-native-community/netinfo";
 
@@ -32,71 +36,33 @@ unsubscribe();
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
-const screenOptionStyle = {
-  headerTitleStyle: { alignSelf: "center" },
-  headerStyle: {
-    backgroundColor: "#01a862",
-  },
-  headerTintColor: "white",
-  headerBackTitle: "Back",
-};
+export default function App({navigation}) {
+  const { user } = store.getState().user;
+  console.log('[userApp]', user);
 
-export default function App() {
-  const [signIn, setSignIn] = useState(false);
 
-  async function getStore() {
-    const login = await AsyncStorage.getItem('@storage_Key');
-    setSignIn(login);
-    console.log('[signin]', signIn);
-  }
-
-  useEffect(() => {
-    getStore();
-  });
 
   return (
     <>
+    <Provider store={store}>
+        <PersistGate persistor={persistor}>
           <NavigationContainer>
-            {signIn ? (
-              <>
-                <Tab.Navigator
-                  screenOptions={({ route }) => ({
-                    tabBarIcon: ({ focused, color, size }) => {
-                      let iconName;
-
-                      if (route.name === 'Home') {
-                        iconName = 'home'
-                      } else if (route.name === 'Receitas') {
-                        iconName = 'money-bill-alt';
-                      } else if (route.name === 'Despesas') {
-                        iconName = 'sad-cry';
-                      } else if (route.name === 'Categorias') {
-                        iconName = 'bars';
-                      } else if (route.name === 'Configurações') {
-                        iconName = 'cog';
-                      }
-                      return <Icon name={iconName} size={size} color={color} />;
-                    },
-                    tabBarInactiveTintColor: 'gray',
-                  })}
-                >
-                  <Tab.Screen name="Home" component={Home} />
-                  <Tab.Screen name="Receitas" component={Receitas} />
-                  <Tab.Screen name="Despesas" component={Despesas} />
-                  <Tab.Screen name="Categorias" component={Despesas} />
-                  <Tab.Screen name="Configurações" component={Configurações} />
-                </Tab.Navigator>
-              </>
-            ) : (
               <Stack.Navigator>
                 <Stack.Screen
                   options={{ headerShown: false }}
                   name="Login"
                   component={Login}
                 />
+                <Stack.Screen
+                  options={{ headerShown: false }}
+                  name="HomeTabs"
+                  component={HomeTabs}
+                />
               </Stack.Navigator>
-            )}
+            
           </NavigationContainer>
+          </PersistGate>
+          </Provider>
     </>
   );
 }
