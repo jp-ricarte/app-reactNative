@@ -24,13 +24,16 @@ export default function Login({ navigation }) {
 
   async function login(data) {
       await api.post('/login', data).then((response) => {
+        
         if (response.data.loggedIn) {
           navigation.navigate('HomeTabs');
           const jsonValue = JSON.stringify(data);
           AsyncStorage.setItem('@storage_Key', jsonValue);
+
         } else {
           alert('E-mail ou senha inválidos!');      
         }
+
       });
   }
 
@@ -60,7 +63,7 @@ export default function Login({ navigation }) {
           <Senha>
             <Icon name="lock" size={20} color="rgba(255, 255, 255, 0.6)" />
             <TextInputStyled onBlur={onBlur} placeholder="senha" onChangeText={(value) => onChange(value)} value={value} secureTextEntry={hide ? true : false} />
-            <Icon onPress={hideHidePassword} name={hide ? "visibility-off" : "visibility"} size={20} color="rgba(255, 255, 255, 0.9)" />
+            <Icon onPress={hideHidePassword} name={hide ? "visibility-off" : "visibility"} size={24} color="rgba(255, 255, 255, 0.9)" />
           </Senha>
         )}
         name="user_senha"

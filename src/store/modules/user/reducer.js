@@ -6,11 +6,11 @@ const INITIAL_STATE = {
     switch (action.type) {
       case 'SALVAR_USER':
         return {
+          ...state,
           user: action.payload,
         };
         case 'SAIR':
         return {
-          ...state,
           user: null,
         };
   

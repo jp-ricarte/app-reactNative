@@ -41,12 +41,11 @@ export const TextInputStyled = styled.TextInput`
   margin-bottom: 10px;
   width: 100%;
   color: #000;
-  border-bottom-width: 2px;
+  border-bottom-width: 1.5px;
   border-bottom-color: #01a862;
 `;
 
 export const Forms = styled.View`
-  margin-top: 50px;
   display: flex;
   background-color: #fff;
   align-self: center;
@@ -54,7 +53,6 @@ export const Forms = styled.View`
   padding: 25px;
   width: 100%;
   height: 100%;
-  border-radius: 20px;
   shadow-radius: 3.84px;
   elevation: 5;
 `;

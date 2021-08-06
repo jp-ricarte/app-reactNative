@@ -8,6 +8,7 @@ import Receitas from "../../screens/Receitas";
 import Despesas from "../../screens/Despesas";
 import Configurações from "../../screens/Configurações";
 import Icon from "react-native-vector-icons/FontAwesome5";
+import Categorias from "../../screens/Categorias";
 
 const Tab = createBottomTabNavigator();
 
@@ -38,7 +39,7 @@ const HomeTabs = ({ navigation }) => {
         <Tab.Screen name="Home" component={Home} />
         <Tab.Screen name="Receitas" component={Receitas} />
         <Tab.Screen name="Despesas" component={Despesas} />
-        <Tab.Screen name="Categorias" component={Despesas} />
+        <Tab.Screen name="Categorias" component={Categorias} />
         <Tab.Screen name="Configurações" component={Configurações} />
       </Tab.Navigator>
     </>

@@ -31,16 +31,10 @@ const unsubscribe = NetInfo.addEventListener((state) => {
   console.log("Is connected?", state.isConnected);
 });
 
-// Unsubscribe
 unsubscribe();
 const Stack = createStackNavigator();
-const Tab = createBottomTabNavigator();
 
 export default function App({navigation}) {
-  const { user } = store.getState().user;
-  console.log('[userApp]', user);
-
-
 
   return (
     <>
