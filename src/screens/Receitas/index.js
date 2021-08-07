@@ -11,37 +11,58 @@ import Icon from "react-native-vector-icons/MaterialIcons";
 import { useForm, Controller } from "react-hook-form";
 import {
   Texto,
+  Container,
   TextCard,
   TextInputStyled,
   Forms,
   ModalIten,
   CardItem,
-  ButtonAdd
+  ButtonAdd,
+  Select
 } from "./styles";
+import { Picker } from '@react-native-picker/picker';
 
-import { Container } from "../../../global";
-
-
-import { bindActionCreators } from "redux";
-import { connect } from "react-redux";
+import api from "../../services/api";
 
 export default function Receitas({ navigation, itens, addItem }) {
-
   const { control, handleSubmit, errors } = useForm();
   const [modalVisible, setModalVisible] = useState(false);
+  const [data, setData] = useState([]);
+  const [categorias, setCategorias] = useState([]);
+  const [selectedCategoria, setSelectedCategoria] = useState();
 
-  // useEffect(() => {
-  //
-  // });
-
-  function post(data) {
+  async function get() {
     try {
-      console.log(data);
+      const res = await api.get('/receitas');
+      setData(res.data.receitas);
+    } catch (err) {
+      console.log(err.response.data);
+    }
+  }
 
+  async function getCategorias() {
+    try {
+      const cat = await api.get('/categorias');
+      setCategorias(cat.data.categorias);
+    } catch (err) {
+      console.log(err.response.data);
+    }
+  }
+
+  useEffect(() => {
+    get();
+    getCategorias();
+  }, []);
+
+  async function post(data) {
+    try {
+      data.receita_categoria = selectedCategoria;
+      console.log(data)
+      await api.post('/receitas', data);
+      get();
       setModalVisible(false);
     } catch (error) {
-      console.log(data);
-      console.log(error);
+      console.log(error.response.data);
     }
   }
 
@@ -51,13 +72,14 @@ export default function Receitas({ navigation, itens, addItem }) {
         <Button
           onPress={() => setModalVisible(true)}
           title="&#8853; Adicionar"
-          color="#01a862"
+          color="#0477C4"
         />
-        {/* {itens.map((item) => (
-          <CardItem>
-            <TextCard>{item.name}</TextCard>
+        {data.map((r) => (
+          <CardItem key={r.receita_id}>
+            <TextCard>{r.receita_descricao}</TextCard>
+            <TextCard>{r.receita_valor}</TextCard>
           </CardItem>
-        ))} */}
+        ))}
         <ModalIten
           animationType="slide"
           transparent={true}
@@ -70,38 +92,75 @@ export default function Receitas({ navigation, itens, addItem }) {
             <Icon
               onPress={() => setModalVisible(false)}
               name="close"
-              size={25}
+              size={35}
               style={{
                 position: "relative",
                 top: -15,
                 left: "90%",
                 zIndex: 10,
               }}
-              color="rgb(1,168,98)"
+              color="rgb(4, 119, 196)"
             />
+
+            <Select>
+              <Texto>Categoria</Texto>
+              <Picker
+                style={{ height: 30, width: '100%', marginTop: 10, marginLeft: 0 }}
+                selectedValue={selectedCategoria}
+                onValueChange={(itemValue, itemIndex) =>
+                  setSelectedCategoria(itemValue)
+                }>
+
+                {categorias.map((ctg) => (
+                  <Picker.Item key={ctg.ctg_id} label={ctg.ctg_nome} value={ctg.ctg_id} />
+                ))}
+
+              </Picker>
+            </Select>
 
             <Controller
               control={control}
               render={({ onChange, onBlur, value }) => (
                 <>
-                  <Texto>Nome do Item</Texto>
+                  <Texto>Nome da Receita</Texto>
                   <TextInputStyled
                     onBlur={onBlur}
                     placeholder=""
                     onChangeText={(value) => onChange(value)}
                     value={value}
                     autoFocus={true}
+
                   />
                 </>
               )}
-              name="name"
+              name="receita_descricao"
+              rules={{ required: true }}
+              defaultValue=""
+            />
+            <Controller
+              control={control}
+              render={({ onChange, onBlur, value }) => (
+                <>
+                  <Texto>Valor da Receita</Texto>
+                  <TextInputStyled
+                    onBlur={onBlur}
+                    keyboardType='numeric'
+                    placeholder=""
+                    onChangeText={(value) => onChange(value)}
+                    value={value}
+                    autoFocus={true}
+
+                  />
+                </>
+              )}
+              name="receita_valor"
               rules={{ required: true }}
               defaultValue=""
             />
             <Button
-              onPress={() => addItem({ name: "Joao" })}
+              onPress={handleSubmit(post)}
               title="confirmar"
-              color="#01a862"
+              color="#0477C4"
             />
           </Forms>
         </ModalIten>

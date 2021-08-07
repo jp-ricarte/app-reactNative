@@ -1,5 +1,5 @@
 import React from "react";
-import { Text, View, TextInput, Button, Alert, Image } from "react-native";
+import { Text, View, TextInput, Button, Alert, Image, ActivityIndicator } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { useForm, Controller } from "react-hook-form";
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -15,26 +15,42 @@ import {
 
 import { Container } from '../../../global';
 
-import { useState } from "react/cjs/react.development";
+import { useState, useEffect } from "react/cjs/react.development";
 import api from "../../services/api";
 
 export default function Login({ navigation }) {
   const { control, handleSubmit, errors } = useForm();
   const [hide, sethide] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [logged, setLogged] = useState();
+
+
+  async function getUser() {
+    const user = await AsyncStorage.getItem('@storage_Key');
+    setLogged(user)
+    console.log('user', logged);
+    if (logged) {
+      navigation.navigate('HomeTabs');
+    } 
+  }
+
+  useEffect(() => {
+    getUser();
+  });
 
   async function login(data) {
-      await api.post('/login', data).then((response) => {
-        
-        if (response.data.loggedIn) {
-          navigation.navigate('HomeTabs');
-          const jsonValue = JSON.stringify(data);
-          AsyncStorage.setItem('@storage_Key', jsonValue);
+    setLoading(true);
+    await api.post('/login', data).then((response) => {
+      if (response.data.loggedIn) {
+        const jsonValue = JSON.stringify(data);
+        AsyncStorage.setItem('@storage_Key', jsonValue);
+        navigation.navigate('HomeTabs');
+      } else { 
+        alert('E-mail ou senha inválidos!');
+      }
+      setLoading(false);
 
-        } else {
-          alert('E-mail ou senha inválidos!');      
-        }
-
-      });
+    });
   }
 
   function hideHidePassword() {
@@ -70,11 +86,15 @@ export default function Login({ navigation }) {
         rules={{ required: true }}
         defaultValue=""
       />
-      <ViewButton>
+        {loading ? (
+          <ActivityIndicator style={{marginTop: 29}} size="large" color="#0477C4" />
+        ) : (
+          <ViewButton>
         <ButtonLogin title="Submit" onPress={handleSubmit(login)}>
           <TextLogin>Entrar</TextLogin>
         </ButtonLogin>
-      </ViewButton>
+      </ViewButton> 
+        )}
     </Container>
   );
 }

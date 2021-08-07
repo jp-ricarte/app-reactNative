@@ -17,5 +17,5 @@ export const TextInputStyled = styled.TextInput`
   width: 100%;
   color: #000;
   border-bottom-width: 1.5px;
-  border-bottom-color: #01a862;
+  border-bottom-color: #0477C4;
 `;

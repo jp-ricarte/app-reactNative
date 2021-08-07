@@ -45,7 +45,7 @@ export default function Despesas({ navigation }) {
         <Button
           onPress={() => setModalVisible(true)}
           title="&#8853; Adicionar"
-          color="#01a862"
+          color="#0477C4"
         />
         {/* {itens.map((item) => (
           <CardItem>
@@ -71,7 +71,7 @@ export default function Despesas({ navigation }) {
                 left: "90%",
                 zIndex: 10,
               }}
-              color="rgb(1,168,98)"
+              color="rgb(4, 119, 196)"
             />
 
             <Controller
@@ -95,7 +95,7 @@ export default function Despesas({ navigation }) {
             <Button
               onPress={() => addItem({ name: "Joao" })}
               title="confirmar"
-              color="#01a862"
+              color="#0477C4"
             />
           </Forms>
         </ModalIten>

@@ -23,7 +23,7 @@ import Icon from "react-native-vector-icons/FontAwesome5";
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { store, persistor } from "./src/store";
-
+import api from "./src/services/api";
 import NetInfo from "@react-native-community/netinfo";
 
 const unsubscribe = NetInfo.addEventListener((state) => {
@@ -35,7 +35,36 @@ unsubscribe();
 const Stack = createStackNavigator();
 
 export default function App({navigation}) {
+  // const [user, setUser] = useState();
 
+  
+  // async function login(data) {
+  //   try{
+  //     console.log('datauser', data)
+  //     await api.post('/login', data).then((response) => {
+  //       if (response.data.loggedIn) {
+  //         const jsonValue = JSON.stringify(data);
+  //         AsyncStorage.setItem('@storage_Key', jsonValue);
+  //         navigation.navigate('HomeTabs');
+  //       } else {
+  //         alert('E-mail ou senha inválidos!');
+  //       }
+        
+  //     });
+      
+  //   }catch(err) {
+  //     console.log(err.response.data)
+  //   }
+  // }
+  
+  // async function getUser() {
+  //   const log = await AsyncStorage.getItem('@storage_Key');
+  //   setUser(log);
+  //   console.log(user);
+  //   login(user);
+  // }
+  // getUser();
+  
   return (
     <>
     <Provider store={store}>
