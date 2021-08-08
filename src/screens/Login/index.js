@@ -36,7 +36,7 @@ export default function Login({ navigation }) {
 
   useEffect(() => {
     getUser();
-  });
+  },[]);
 
   async function login(data) {
     setLoading(true);
