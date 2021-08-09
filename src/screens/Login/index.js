@@ -22,35 +22,49 @@ export default function Login({ navigation }) {
   const { control, handleSubmit, errors } = useForm();
   const [hide, sethide] = useState(true);
   const [loading, setLoading] = useState(false);
-  const [logged, setLogged] = useState();
-
+  const [emailData, setemailData] = useState();
+  const [senhaData, setSenhaData] = useState();
 
   async function getUser() {
-    const user = await AsyncStorage.getItem('@storage_Key');
-    setLogged(user)
-    console.log('user', logged);
-    if (logged) {
-      navigation.navigate('HomeTabs');
-    } 
+    const email = await AsyncStorage.getItem('email')
+    const senha = await AsyncStorage.getItem('senha')
+    console.log(email, senha)
+    loginauto(email, senha);
   }
-
+  
   useEffect(() => {
     getUser();
-  },[]);
+  }, []);
+  async function loginauto(email, senha) {
+    try {
+      
+      await api.post('/login', {
+        "user_email": email,
+        "user_senha": senha
+      });
+      navigation.navigate('HomeTabs');
+    } catch(err) {
+      console.log(err);
+    }
+  }
 
   async function login(data) {
     setLoading(true);
-    await api.post('/login', data).then((response) => {
-      if (response.data.loggedIn) {
-        const jsonValue = JSON.stringify(data);
-        AsyncStorage.setItem('@storage_Key', jsonValue);
-        navigation.navigate('HomeTabs');
-      } else { 
-        alert('E-mail ou senha inválidos!');
-      }
-      setLoading(false);
-
-    });
+    try {
+      await api.post('/login', data).then((response) => {
+        if (response.data.loggedIn) {
+          console.log('userl', data);
+          navigation.navigate('HomeTabs');
+          AsyncStorage.setItem('email', data.user_email)
+          AsyncStorage.setItem('senha', data.user_senha)
+        } else {
+          alert('E-mail ou senha inválidos!');
+        }
+      });
+    } catch (err) {
+      console.log(err.response.data);
+    }
+    setLoading(false);
   }
 
   function hideHidePassword() {
@@ -86,15 +100,15 @@ export default function Login({ navigation }) {
         rules={{ required: true }}
         defaultValue=""
       />
-        {loading ? (
-          <ActivityIndicator style={{marginTop: 29}} size="large" color="#0477C4" />
-        ) : (
-          <ViewButton>
-        <ButtonLogin title="Submit" onPress={handleSubmit(login)}>
-          <TextLogin>Entrar</TextLogin>
-        </ButtonLogin>
-      </ViewButton> 
-        )}
+      {loading ? (
+        <ActivityIndicator style={{ marginTop: 29 }} size="large" color="#0477C4" />
+      ) : (
+        <ViewButton>
+          <ButtonLogin title="Submit" onPress={handleSubmit(login)}>
+            <TextLogin>Entrar</TextLogin>
+          </ButtonLogin>
+        </ViewButton>
+      )}
     </Container>
   );
 }

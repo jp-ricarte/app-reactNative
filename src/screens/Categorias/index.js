@@ -28,8 +28,12 @@ export default function Categorias({ navigation }) {
   const [data, setData] = useState([]);
 
   async function get() {
-    const res = await api.get('/categorias');
-    setData(res.data.categorias);
+    try {
+      const res = await api.get('/categorias');
+      setData(res.data.categorias);
+    } catch(err) {
+      console.log(err.response.data); 
+    }
   }
 
   useEffect(() => {
