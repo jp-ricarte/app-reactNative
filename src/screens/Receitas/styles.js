@@ -2,8 +2,6 @@ import styled from "styled-components/native";
  
 export const Container = styled.View`
   display: flex;
-
-  background-color: #fff;
   width: 100%;
   height: 100%;
 `;
@@ -16,16 +14,25 @@ export const CardItem = styled.View`
   display: flex;
   align-self: center;
   background-color: #fff;
-  width: 90%;
-  margin-top: 0px;
-  padding: 20px;
-  padding-bottom: 0;
+  width: 95%;
+  margin-top: 10px;
+  padding: 15px;
 `;
 
 export const TextCard = styled.Text`
   color: #000;
   font-weight: bold;
   font-size: 18px;
+`;
+export const TextCash = styled.Text`
+  color: #3dbd20;
+  font-weight: bold;
+  font-size: 18px;
+`;
+
+export const TextCategory = styled.Text`
+  color: #757474;
+  font-size: 14px;
 `;
 
 export const Texto = styled.Text`

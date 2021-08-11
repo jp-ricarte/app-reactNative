@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useDispatch } from "react-redux";
+import moment from 'moment';
 import {
   Button,
   Alert,
@@ -13,6 +13,8 @@ import {
   Texto,
   Container,
   TextCard,
+  TextCash,
+  TextCategory,
   TextInputStyled,
   Forms,
   ModalIten,
@@ -40,6 +42,8 @@ export default function Receitas({ navigation, itens, addItem }) {
     }
   }
 
+
+
   async function getCategorias() {
     try {
       const cat = await api.get('/categorias');
@@ -48,6 +52,8 @@ export default function Receitas({ navigation, itens, addItem }) {
       console.log(err.response.data);
     }
   }
+
+
 
   useEffect(() => {
     get();
@@ -77,7 +83,9 @@ export default function Receitas({ navigation, itens, addItem }) {
         {data.map((r) => (
           <CardItem key={r.receita_id}>
             <TextCard>{r.receita_descricao}</TextCard>
-            <TextCard>{r.receita_valor}</TextCard>
+            <TextCategory>{r.categoria.ctg_nome}</TextCategory>
+            <TextCash>R$ {r.receita_valor}</TextCash>
+            <TextCategory>{moment().format('DD/MM')}</TextCategory>
           </CardItem>
         ))}
         <ModalIten
