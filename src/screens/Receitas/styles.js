@@ -17,6 +17,7 @@ export const CardItem = styled.View`
   width: 95%;
   margin-top: 10px;
   padding: 15px;
+  border-radius: 5px;
 `;
 
 export const TextCard = styled.Text`

@@ -4,7 +4,9 @@ import {
   Alert,
   View,
   ScrollView,
+  Text,
   TouchableOpacity,
+  ActivityIndicator
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { useForm, Controller } from "react-hook-form";
@@ -26,13 +28,14 @@ export default function Categorias({ navigation }) {
   const { control, handleSubmit, errors } = useForm();
   const [modalVisible, setModalVisible] = useState(false);
   const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   async function get() {
     try {
       const res = await api.get('/categorias');
       setData(res.data.categorias);
-    } catch(err) {
-      console.log(err.response.data); 
+    } catch (err) {
+      console.log(err.response.data);
     }
   }
 
@@ -41,6 +44,7 @@ export default function Categorias({ navigation }) {
   }, []);
 
   async function post(data) {
+    setLoading(true);
     try {
       data.ctg_tipo = selectedLanguage;
       console.log(data)
@@ -50,6 +54,7 @@ export default function Categorias({ navigation }) {
     } catch (error) {
       console.log(error);
     }
+    setLoading(false);
   }
 
 
@@ -61,11 +66,16 @@ export default function Categorias({ navigation }) {
           title="&#8853; Adicionar"
           color="#0477C4"
         />
-        {data.map((ctg) => (
-          <CardItem key={ctg.ctg_id}>
-            <TextCard>{ctg.ctg_nome}</TextCard>
-          </CardItem>
-        ))}
+        {data ? (
+          data.map((ctg) => (
+            <CardItem key={ctg.ctg_id}>
+              <TextCard>{ctg.ctg_nome}</TextCard>
+            </CardItem>
+          ))
+
+        ) : (
+          <Text>Adicione uma categoria</Text>
+        )}
         <ModalIten
           animationType="slide"
           transparent={true}
@@ -120,12 +130,16 @@ export default function Categorias({ navigation }) {
               defaultValue=""
             />
 
+            {loading ? (
+              <ActivityIndicator style={{ marginTop: 29 }} size="large" color="#0477C4" />
+            ) : (
+              <Button
+                onPress={handleSubmit(post)}
+                title="confirmar"
+                color="#0477C4"
+              />
+            )}
 
-            <Button
-              onPress={handleSubmit(post)}
-              title="confirmar"
-              color="#0477C4"
-            />
           </Forms>
         </ModalIten>
       </Container>

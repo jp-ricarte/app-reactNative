@@ -24,11 +24,14 @@ export default function Login({ navigation }) {
   const [loading, setLoading] = useState(false);
   const [emailData, setemailData] = useState();
   const [senhaData, setSenhaData] = useState();
+  const [nome, setNome] = useState();
 
   async function getUser() {
-    const email = await AsyncStorage.getItem('email')
-    const senha = await AsyncStorage.getItem('senha')
-    console.log(email, senha)
+    const email = await AsyncStorage.getItem('email');
+    const senha = await AsyncStorage.getItem('senha');
+    const nome = await AsyncStorage.getItem('nome');
+    setNome(nome)
+    console.log(email, senha, nome);
     loginauto(email, senha);
   }
   
@@ -57,6 +60,7 @@ export default function Login({ navigation }) {
           navigation.navigate('HomeTabs');
           AsyncStorage.setItem('email', data.user_email)
           AsyncStorage.setItem('senha', data.user_senha)
+          AsyncStorage.setItem('nome', response.data.data.user_nome);
         } else {
           alert('E-mail ou senha inválidos!');
         }

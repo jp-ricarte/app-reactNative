@@ -4,8 +4,10 @@ import {
   Button,
   Alert,
   View,
+  Text,
   ScrollView,
   TouchableOpacity,
+  ActivityIndicator
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { useForm, Controller } from "react-hook-form";
@@ -48,6 +50,7 @@ export default function Receitas({ navigation, itens, addItem }) {
     try {
       const cat = await api.get('/categorias');
       setCategorias(cat.data.categorias);
+      console.log(categorias);
     } catch (err) {
       console.log(err.response.data);
     }
@@ -62,7 +65,11 @@ export default function Receitas({ navigation, itens, addItem }) {
 
   async function post(data) {
     try {
-      data.receita_categoria = selectedCategoria;
+      if (categorias.length == 1) {
+        data.receita_categoria = categorias[0].ctg_id;
+      } else {
+        data.receita_categoria = selectedCategoria;
+      }
       console.log(data)
       await api.post('/receitas', data);
       get();
@@ -80,14 +87,19 @@ export default function Receitas({ navigation, itens, addItem }) {
           title="&#8853; Adicionar"
           color="#0477C4"
         />
-        {data.map((r) => (
-          <CardItem key={r.receita_id}>
-            <TextCard>{r.receita_descricao}</TextCard>
-            <TextCategory>{r.categoria.ctg_nome}</TextCategory>
-            <TextCash>R$ {r.receita_valor}</TextCash>
-            <TextCategory>{moment().format('DD/MM')}</TextCategory>
-          </CardItem>
-        ))}
+        {data ? (
+          data.map((r) => (
+            <CardItem key={r.receita_id}>
+              <TextCard>{r.receita_descricao}</TextCard>
+              <TextCategory>{r.categoria.ctg_nome}</TextCategory>
+              <TextCash>R$ {r.receita_valor}</TextCash>
+              <TextCategory>{moment().format('DD/MM')}</TextCategory>
+            </CardItem>
+          ))
+
+        ) : (
+          <Text>Não há receitas :(</Text>
+        )}
         <ModalIten
           animationType="slide"
           transparent={true}
@@ -113,7 +125,7 @@ export default function Receitas({ navigation, itens, addItem }) {
             <Select>
               <Texto>Categoria</Texto>
               <Picker
-                style={{ height: 30, width: '100%', marginTop: 10, marginLeft: 0 }}
+                style={{ height: 30, width: '100%', marginTop: 10, marginLeft: 0,}}
                 selectedValue={selectedCategoria}
                 onValueChange={(itemValue, itemIndex) =>
                   setSelectedCategoria(itemValue)
