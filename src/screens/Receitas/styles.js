@@ -4,7 +4,27 @@ export const Container = styled.View`
   display: flex;
   width: 100%;
   height: 100%;
+  margin-top: 30%;
+  margin-bottom: 5%;
 `;
+
+export const Head = styled.View`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  background: #fff;
+  height: 17%;
+  position: absolute;
+  z-index: 1;
+`;
+
+export const TextHead = styled.Text`
+  color: #000;
+  font-size: 16px;
+`;
+
+
 export const ModalIten = styled.Modal`
   display: flex;
   align-self: center;
@@ -12,6 +32,8 @@ export const ModalIten = styled.Modal`
 `;
 export const CardItem = styled.View`
   display: flex;
+  flex-direction: row;
+  justify-content: space-between;
   align-self: center;
   background-color: #fff;
   width: 95%;
@@ -22,8 +44,7 @@ export const CardItem = styled.View`
 
 export const TextCard = styled.Text`
   color: #000;
-  font-weight: bold;
-  font-size: 18px;
+  font-size: 16px;
 `;
 export const TextCash = styled.Text`
   color: #3dbd20;
@@ -33,7 +54,7 @@ export const TextCash = styled.Text`
 
 export const TextCategory = styled.Text`
   color: #757474;
-  font-size: 14px;
+  font-size: 13px;
 `;
 
 export const Texto = styled.Text`
@@ -52,10 +73,10 @@ export const TextInputStyled = styled.TextInput`
   color: #000;
   border-bottom-width: 1.5px;
   border-bottom-color: #0477C4;
-  font-size: 16px;
-`;
-
-export const Select = styled.View`
+  font-size: 20px;
+  `;
+  
+  export const Select = styled.View`
   padding: 10px;
   padding-left: 0px;
   padding-bottom: 0px;
@@ -64,8 +85,8 @@ export const Select = styled.View`
   color: #000;
   border-bottom-width: 1.5px;
   border-bottom-color: #0477C4;
-`;
-
+  `;
+  
 export const Forms = styled.View`
   display: flex;
   background-color: #fff;

@@ -13,10 +13,10 @@ export default function Home({ navigation }) {
 
   async function getUser() {
     const nome = await AsyncStorage.getItem('nome');
-    console.log(nome)
+    console.log('[nome]', nome)
     setNome(nome);
   }
-  console.log(moment().format('HH'))
+  console.log('[hora]', moment().format('HH'))
   
   useEffect(() => {
     setHora(moment().format('HH'));

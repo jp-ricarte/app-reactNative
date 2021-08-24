@@ -31,7 +31,7 @@ export default function Login({ navigation }) {
     const senha = await AsyncStorage.getItem('senha');
     const nome = await AsyncStorage.getItem('nome');
     setNome(nome)
-    console.log(email, senha, nome);
+    console.log('[localstorage]', email, senha, nome);
     loginauto(email, senha);
   }
   
@@ -40,12 +40,13 @@ export default function Login({ navigation }) {
   }, []);
   async function loginauto(email, senha) {
     try {
-      
-      await api.post('/login', {
-        "user_email": email,
-        "user_senha": senha
-      });
-      navigation.navigate('HomeTabs');
+      if (email) {
+        await api.post('/login', {
+          "user_email": email,
+          "user_senha": senha
+        });
+        navigation.navigate('HomeTabs');
+      }
     } catch(err) {
       console.log(err);
     }
