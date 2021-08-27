@@ -10,7 +10,6 @@ export const Container = styled.View`
 
 export const Head = styled.View`
   display: flex;
-  align-items: center;
   justify-content: center;
   width: 100%;
   background: #fff;
@@ -21,9 +20,26 @@ export const Head = styled.View`
 
 export const TextHead = styled.Text`
   color: #000;
+  margin-top: 30px;
+  margin-bottom: 2px;;
   font-size: 16px;
-`;
+  text-align: center;
+  `;
 
+export const ButtonHead = styled.Text`
+  color: #000;
+  margin-top: 25px;
+  margin-bottom: 2px;;
+  font-size: 16px;
+  text-align: center;
+  `;
+
+export const FlexRow = styled.View`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin: 0 7%;
+`;
 
 export const ModalIten = styled.Modal`
   display: flex;
@@ -48,7 +64,6 @@ export const TextCard = styled.Text`
 `;
 export const TextCash = styled.Text`
   color: #3dbd20;
-  font-weight: bold;
   font-size: 18px;
 `;
 

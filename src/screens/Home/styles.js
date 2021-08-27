@@ -17,4 +17,13 @@ export const Wellcome = styled.View`
   margin: 10px;
   padding: 15px;
 `;
- 
+
+export const TextCash = styled.Text`
+  color: #3dbd20;
+  font-size: 25px;
+`;
+
+export const TextCashRed = styled.Text`
+  color: red;
+  font-size: 25px;
+`;

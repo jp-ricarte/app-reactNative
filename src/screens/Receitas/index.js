@@ -25,7 +25,9 @@ import {
     ButtonAdd,
     Select,
     Head,
-    TextHead
+    TextHead,
+    FlexRow,
+    ButtonHead,
 
 } from "./styles";
 import { Picker } from '@react-native-picker/picker';
@@ -38,6 +40,7 @@ export default function Receitas({ navigation, itens, addItem }) {
     const { control, handleSubmit, errors } = useForm();
     const [modalVisible, setModalVisible] = useState(false);
     const [data, setData] = useState([]);
+    const [receitaTotal, setReceitaTotal] = useState();
     const [categorias, setCategorias] = useState([]);
     const [selectedCategoria, setSelectedCategoria] = useState();
     const [money, setMoney] = useState();
@@ -52,7 +55,14 @@ export default function Receitas({ navigation, itens, addItem }) {
         }
     }
 
-
+    async function getDashboard() {
+        try {
+            const res = await api.get('/dashboard');
+            setReceitaTotal(res.data.data.receita);
+        } catch (err) {
+            console.log(err.response.data);
+        }
+    }
 
     async function getCategorias() {
         try {
@@ -69,6 +79,7 @@ export default function Receitas({ navigation, itens, addItem }) {
     useEffect(() => {
         get();
         getCategorias();
+        getDashboard();
     }, []);
 
     async function post(data) {
@@ -83,6 +94,7 @@ export default function Receitas({ navigation, itens, addItem }) {
             console.log(data)
             await api.post('/receitas', data);
             get();
+            getDashboard();
             setModalVisible(false);
         } catch (error) {
             console.log(error.response.data);
@@ -91,9 +103,28 @@ export default function Receitas({ navigation, itens, addItem }) {
 
     return (
         <>
-                    <Head>
-                        <TextHead>Receita Total</TextHead>
-                    </Head>
+            <Head style={{
+                shadowColor: "#000",
+                shadowOffset: {
+                    width: 0,
+                    height: 2,
+                },
+                shadowOpacity: 0.23,
+                shadowRadius: 2.62,
+                
+                elevation: 4,
+            }}>
+                <TextHead>Receita Total: <TextCash> <TextMask value={receitaTotal} type={'money'} /> </TextCash> </TextHead>
+                <FlexRow>
+                    <TouchableHighlight style={{borderRadius: 50}} activeOpacity={0.5} underlayColor="#dddd" onPress={() => setModalVisible(true)}>
+                        <Text><Icon name="add" size={30} color="rgba(4, 119, 196, 1)" /></Text>
+                    </TouchableHighlight>
+                    <TouchableHighlight style={{borderRadius: 50}} activeOpacity={0.5} underlayColor="#dddd" onPress={() => setModalVisible(true)}>
+                        <Text><Icon name="search" size={30} color="rgba(4, 119, 196, 1)" /></Text>
+                    </TouchableHighlight>
+                </FlexRow>
+                
+            </Head>
             <ScrollView keyboardShouldPersistTaps='handled' contentContainerStyle={{ flexGrow: 1 }}>
                 <Container>
                     {data ? (

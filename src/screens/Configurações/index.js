@@ -21,8 +21,7 @@ export default function Configurações({ navigation }) {
 
   return (
       <UL>
-          <LI onPress={logout}> 
-            <Icon name="logout" size={20} color="rgba(228, 14, 14, 1)" /> Sair</LI>
+          <LI onPress={logout}><Icon name="logout" size={20} color="rgba(228, 14, 14, 1)" /> Sair</LI>
       </UL>
   );
 }

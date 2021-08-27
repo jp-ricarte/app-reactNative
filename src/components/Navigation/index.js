@@ -38,7 +38,7 @@ const HomeTabs = ({ navigation }) => {
       >
         <Tab.Screen name="Home" component={Home} />
         <Tab.Screen options={{ headerShown: false }} name="Receitas" component={Receitas} />
-        <Tab.Screen name="Despesas" component={Despesas} />
+        <Tab.Screen options={{ headerShown: false }} name="Despesas" component={Despesas} />
         <Tab.Screen name="Categorias" component={Categorias} />
         <Tab.Screen name="Configurações" component={Configurações} />
       </Tab.Navigator>
