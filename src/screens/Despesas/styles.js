@@ -4,7 +4,7 @@ export const Container = styled.View`
   display: flex;
   width: 100%;
   height: 100%;
-  margin-top: 30%;
+  margin-top: 40%;
   margin-bottom: 5%;
 `;
 
@@ -13,7 +13,7 @@ export const Head = styled.View`
   justify-content: center;
   width: 100%;
   background: #fff;
-  height: 17%;
+  height: 21%;
   position: absolute;
   z-index: 1;
 `;
@@ -21,7 +21,6 @@ export const Head = styled.View`
 export const TextHead = styled.Text`
   color: #000;
   margin-top: 30px;
-  margin-bottom: 2px;;
   font-size: 16px;
   text-align: center;
   `;
@@ -39,6 +38,8 @@ export const FlexRow = styled.View`
   flex-direction: row;
   justify-content: space-between;
   margin: 0 7%;
+  position: relative;
+  top: 17px;
 `;
 
 export const ModalIten = styled.Modal`

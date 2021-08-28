@@ -1,7 +1,10 @@
 import React from "react";
-import { Text, View, TextInput, Button, Alert, Image, ActivityIndicator } from "react-native";
+import { Text, View, TextInput, Button, Alert, Image, ActivityIndicator, StyleSheet } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
+import IconCommunity from "react-native-vector-icons/MaterialCommunityIcons";
+import IconFontAwesome from "react-native-vector-icons/FontAwesome";
 import { useForm, Controller } from "react-hook-form";
+import * as Google from "expo-google-app-auth";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   TextInputStyled,
@@ -11,6 +14,7 @@ import {
   ViewButton,
   TextLogin,
   Titulo,
+  ViewButtonGoogle
 } from "./styles";
 
 import { Container } from '../../../global';
@@ -22,9 +26,27 @@ export default function Login({ navigation }) {
   const { control, handleSubmit, errors } = useForm();
   const [hide, sethide] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [loadingStorage, setLoadingStorage] = useState(true);
   const [emailData, setemailData] = useState();
   const [senhaData, setSenhaData] = useState();
   const [nome, setNome] = useState();
+
+
+  async function googleLogin() {
+    try {
+      const { type, user } = await Google.logInAsync({
+        iosClientId: `<YOUR_IOS_CLIENT_ID>`,
+        androidClientId: `356000393313-vp3df828bj11s3ej6qgf4qdm1dgvc7o8.apps.googleusercontent.com`,
+      });
+
+      if (type === "success") {
+        // Then you can use the Google REST API
+        console.log("LoginScreen.js 17 | success, navigating to profile", user);
+      }
+    } catch (error) {
+      console.log("LoginScreen.js 19 | error with login", error);
+    }
+  };
 
   async function getUser() {
     const email = await AsyncStorage.getItem('email');
@@ -32,12 +54,17 @@ export default function Login({ navigation }) {
     const nome = await AsyncStorage.getItem('nome');
     setNome(nome)
     console.log('[localstorage]', email, senha, nome);
-    loginauto(email, senha);
+    if (email && senha) {
+      loginauto(email, senha);
+    } else {
+      setLoadingStorage(false);
+    }
   }
   
   useEffect(() => {
     getUser();
   }, []);
+
   async function loginauto(email, senha) {
     try {
       if (email) {
@@ -77,13 +104,27 @@ export default function Login({ navigation }) {
   }
 
   return (
+<>
+    {loadingStorage ? (
+      <Container></Container>
+    ) :(
     <Container>
       <Image source={require('../../images/ricarte.jpeg')} style={{ width: '75%', height: 130, resizeMode: 'stretch', marginBottom: 20 }} />
       <Controller
         control={control}
         render={({ onChange, onBlur, value }) => (
-          <Email>
-            <Icon name="mail-outline" size={20} color="rgba(255, 255, 255, 0.6)" />
+          <Email style={{
+            shadowColor: "#000",
+            shadowOffset: {
+                width: 0,
+                height: 2,
+            },
+            shadowOpacity: 0.23,
+            shadowRadius: 2.62,
+            
+            elevation: 4,
+        }}>
+            <Icon name="mail-outline" size={20} color="rgba(0, 0, 0, 1)" />
             <TextInputStyled onBlur={onBlur} placeholder="E-mail" onChangeText={(value) => onChange(value)} value={value} />
           </Email>
         )}
@@ -95,10 +136,10 @@ export default function Login({ navigation }) {
       <Controller
         control={control}
         render={({ onChange, onBlur, value }) => (
-          <Senha>
-            <Icon name="lock" size={20} color="rgba(255, 255, 255, 0.6)" />
+          <Senha style={styles.shadow}>
+            <Icon name="lock" size={20} color="rgba(0, 0, 0, 1)" />
             <TextInputStyled onBlur={onBlur} placeholder="senha" onChangeText={(value) => onChange(value)} value={value} secureTextEntry={hide ? true : false} />
-            <Icon onPress={hideHidePassword} name={hide ? "visibility-off" : "visibility"} size={24} color="rgba(255, 255, 255, 0.9)" />
+            <Icon onPress={hideHidePassword} name={hide ? "visibility-off" : "visibility"} size={24} color="rgba(0, 0, 0, 1)" />
           </Senha>
         )}
         name="user_senha"
@@ -108,12 +149,33 @@ export default function Login({ navigation }) {
       {loading ? (
         <ActivityIndicator style={{ marginTop: 29 }} size="large" color="#0477C4" />
       ) : (
-        <ViewButton>
+        <ViewButton style={styles.shadow}>
           <ButtonLogin title="Submit" onPress={handleSubmit(login)}>
-            <TextLogin>Entrar</TextLogin>
+            <IconCommunity name="login" size={20} color="rgba(0, 0, 0, 1)" />
+            <TextLogin style={{color: '#000'}}> Entrar</TextLogin>
           </ButtonLogin>
         </ViewButton>
       )}
+      <Text>ou</Text>
+        <ViewButtonGoogle style={styles.shadow}>
+          <ButtonLogin title="Submit" onPress={googleLogin}>
+            <TextLogin style={{color: '#fff'}}> <IconFontAwesome name="google" size={20} color="rgba(255, 255, 255, 1)" /> Entrar com o Google</TextLogin>
+          </ButtonLogin>
+        </ViewButtonGoogle>
     </Container>
+
+    )}
+    </>
   );
 }
+
+const styles = StyleSheet.create({
+  shadow: {
+    shadowColor: "#000",
+    shadowOpacity: 0.23,
+    shadowRadius: 2.62,
+    
+    elevation: 4,
+  },
+  
+});

@@ -1,4 +1,5 @@
 import styled from "styled-components/native";
+import { createGlobalStyle } from 'styled-components';
 
 export const Container = styled.View`
   display: flex;

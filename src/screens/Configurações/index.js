@@ -11,7 +11,9 @@ export default function Configurações({ navigation }) {
 
     async function logout() {
         try {
-            await AsyncStorage.removeItem('@storage_Key');
+            await AsyncStorage.removeItem('email');
+            await AsyncStorage.removeItem('senha');
+            await AsyncStorage.removeItem('nome');
             navigation.navigate('Login')
         }
         catch(exception) { 
