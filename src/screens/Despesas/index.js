@@ -57,7 +57,7 @@ export default function Despesas({ navigation, itens, addItem }) {
     async function getDashboard() {
         try {
             const res = await api.get('/dashboard');
-            setDespesaTotal(res.data.data.despesa);
+            setDespesaTotal(res.data[0].despesa);
         } catch (err) {
             console.log(err.response.data);
         }
@@ -79,7 +79,7 @@ export default function Despesas({ navigation, itens, addItem }) {
         get();
         getCategorias();
         getDashboard();
-    }, []);
+    }, [data]);
 
     async function post(data) {
         try {
@@ -113,11 +113,12 @@ export default function Despesas({ navigation, itens, addItem }) {
                 
                 elevation: 4,
             }}>
-                <TextHead>Despesa Total: <TextCash> <TextMask value={despesaTotal} type={'money'} /> </TextCash> </TextHead>
+                <TextHead>Despesa Total</TextHead>
                 <FlexRow>
                     <TouchableHighlight style={{borderRadius: 50}} activeOpacity={0.5} underlayColor="#dddd" onPress={() => setModalVisible(true)}>
                         <Text><Icon name="add" size={30} color="rgba(4, 119, 196, 1)" /></Text>
                     </TouchableHighlight>
+                    <TextCash> <TextMask value={despesaTotal} type={'money'} /> </TextCash> 
                     <TouchableHighlight style={{borderRadius: 50}} activeOpacity={0.5} underlayColor="#dddd" onPress={() => setModalVisible(true)}>
                         <Text><Icon name="search" size={30} color="rgba(4, 119, 196, 1)" /></Text>
                     </TouchableHighlight>
@@ -132,7 +133,7 @@ export default function Despesas({ navigation, itens, addItem }) {
                                 <View>
                                     <TextCard>{r.despesa_descricao}</TextCard>
                                     <TextCategory>{r.categoria.ctg_nome}</TextCategory>
-                                    <TextCategory>{moment().format('DD/MM')}</TextCategory>
+                                    <TextCategory>{moment(r.created_at).format('DD/MM')}</TextCategory>
                                 </View>
                                 <TextCash>
                                     - {''}

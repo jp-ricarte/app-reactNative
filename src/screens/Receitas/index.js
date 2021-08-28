@@ -35,6 +35,7 @@ import { TextInputMask, TextMask } from 'react-native-masked-text'
 
 import api from "../../services/api";
 import { Header } from "react-native/Libraries/NewAppScreen";
+import { TextTitleName } from "../Home/styles";
 
 export default function Receitas({ navigation, itens, addItem }) {
     const { control, handleSubmit, errors } = useForm();
@@ -44,6 +45,7 @@ export default function Receitas({ navigation, itens, addItem }) {
     const [categorias, setCategorias] = useState([]);
     const [selectedCategoria, setSelectedCategoria] = useState();
     const [money, setMoney] = useState();
+    const [search, setSearch] = useState(false);
     const moneyRef = useRef(null);
 
     async function get() {
@@ -58,7 +60,7 @@ export default function Receitas({ navigation, itens, addItem }) {
     async function getDashboard() {
         try {
             const res = await api.get('/dashboard');
-            setReceitaTotal(res.data.data.receita);
+            setReceitaTotal(res.data[0].receita);
         } catch (err) {
             console.log(err.response.data);
         }
@@ -73,7 +75,6 @@ export default function Receitas({ navigation, itens, addItem }) {
             console.log(err.response.data);
         }
     }
-
 
 
     useEffect(() => {
@@ -114,12 +115,13 @@ export default function Receitas({ navigation, itens, addItem }) {
                 
                 elevation: 4,
             }}>
-                <TextHead>Receita Total: <TextCash> <TextMask value={receitaTotal} type={'money'} /> </TextCash> </TextHead>
+                <TextHead>Receita Total</TextHead>
                 <FlexRow>
                     <TouchableHighlight style={{borderRadius: 50}} activeOpacity={0.5} underlayColor="#dddd" onPress={() => setModalVisible(true)}>
                         <Text><Icon name="add" size={30} color="rgba(4, 119, 196, 1)" /></Text>
                     </TouchableHighlight>
-                    <TouchableHighlight style={{borderRadius: 50}} activeOpacity={0.5} underlayColor="#dddd" onPress={() => setModalVisible(true)}>
+                    <TextCash> <TextMask value={receitaTotal} type={'money'} /> </TextCash> 
+                    <TouchableHighlight style={{borderRadius: 50}} activeOpacity={0.5} underlayColor="#dddd" onPress={() => setSearch(true)}>
                         <Text><Icon name="search" size={30} color="rgba(4, 119, 196, 1)" /></Text>
                     </TouchableHighlight>
                 </FlexRow>
@@ -133,7 +135,7 @@ export default function Receitas({ navigation, itens, addItem }) {
                                 <View>
                                     <TextCard>{r.receita_descricao}</TextCard>
                                     <TextCategory>{r.categoria.ctg_nome}</TextCategory>
-                                    <TextCategory>{moment().format('DD/MM')}</TextCategory>
+                                    <TextCategory>{moment(r.created_at).format('DD/MM')}</TextCategory>
                                 </View>
                                 <TextCash>
                                     <TextMask
@@ -167,8 +169,7 @@ export default function Receitas({ navigation, itens, addItem }) {
                                     zIndex: 10,
                                 }}
                                 color="rgb(4, 119, 196)"
-                            />
-
+                                />
                             <Select>
                                 <Texto>Categoria</Texto>
                                 <Picker
@@ -222,6 +223,29 @@ export default function Receitas({ navigation, itens, addItem }) {
                                 color="#0477C4"
                             />
                         </Forms>
+                    </ModalIten>
+                    <ModalIten
+                        animationType="slide"
+                        transparent={true}
+                        visible={search}
+                        onRequestClose={() => {
+                            setSearch(false);
+                        }}>
+                            <Forms>
+                            <Icon
+                                onPress={() => setSearch(false)}
+                                name="cancel"
+                                size={35}
+                                style={{
+                                    position: "relative",
+                                    top: -15,
+                                    left: "90%",
+                                    zIndex: 10,
+                                }}
+                                color="rgb(4, 119, 196)"
+                            />
+                            <TextInputStyled placeholder="Pesquisar Receita" onChangeText={(value) => onChange(value)} autoFocus={true} autoCapitalize="characters"  />
+                            </Forms>
                     </ModalIten>
                 </Container>
             </ScrollView>
