@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useRef } from "react";
+import { useFocusEffect } from '@react-navigation/native';
 import moment from 'moment';
 import {
     Button,
@@ -8,7 +9,8 @@ import {
     ScrollView,
     TouchableOpacity,
     TouchableHighlight,
-    ActivityIndicator
+    ActivityIndicator,
+    StyleSheet 
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { useForm, Controller } from "react-hook-form";
@@ -32,7 +34,7 @@ import {
 } from "./styles";
 import { Picker } from '@react-native-picker/picker';
 import { TextInputMask, TextMask } from 'react-native-masked-text'
-
+import { useFonts, OpenSans_600SemiBold, OpenSans_400Regular } from '@expo-google-fonts/open-sans';
 import api from "../../services/api";
 import { Header } from "react-native/Libraries/NewAppScreen";
 import { TextTitleName } from "../Home/styles";
@@ -47,6 +49,12 @@ export default function Receitas({ navigation, itens, addItem }) {
     const [money, setMoney] = useState();
     const [search, setSearch] = useState(false);
     const moneyRef = useRef(null);
+
+    let [fontsLoaded] = useFonts({
+        OpenSans_600SemiBold,
+        OpenSans_400Regular
+      });
+    
 
     async function get() {
         try {
@@ -73,18 +81,27 @@ export default function Receitas({ navigation, itens, addItem }) {
                 return cat.ctg_tipo;
             });
             setCategorias(catReceitas);
-          
+
         } catch (err) {
             console.log(err.response.data);
         }
     }
 
 
-    useEffect(() => {
-        get();
-        getCategorias();
-        getDashboard();
-    }, []);
+    // useEffect(() => {
+    //     get();
+    //     getCategorias();
+    //     getDashboard();
+    // }, []);
+
+    useFocusEffect(
+        React.useCallback(() => {
+            get();
+            getCategorias();
+            getDashboard();
+        }, [])
+    );
+
 
     async function post(data) {
         try {
@@ -115,20 +132,20 @@ export default function Receitas({ navigation, itens, addItem }) {
                 },
                 shadowOpacity: 0.23,
                 shadowRadius: 2.62,
-                
+
                 elevation: 4,
             }}>
                 <TextHead>Receita Total</TextHead>
                 <FlexRow>
-                    <TouchableHighlight style={{borderRadius: 50}} activeOpacity={0.5} underlayColor="#dddd" onPress={() => setModalVisible(true)}>
+                    <TouchableHighlight style={{ borderRadius: 50 }} activeOpacity={0.5} underlayColor="#dddd" onPress={() => setModalVisible(true)}>
                         <Text><Icon name="add" size={30} color="rgba(4, 119, 196, 1)" /></Text>
                     </TouchableHighlight>
-                    <TextCash> <TextMask value={receitaTotal} type={'money'} /> </TextCash> 
-                    <TouchableHighlight style={{borderRadius: 50}} activeOpacity={0.5} underlayColor="#dddd" onPress={() => setSearch(true)}>
+                    <TextCash> <TextMask value={receitaTotal} type={'money'} /> </TextCash>
+                    <TouchableHighlight style={{ borderRadius: 50 }} activeOpacity={0.5} underlayColor="#dddd" onPress={() => setSearch(true)}>
                         <Text><Icon name="search" size={30} color="rgba(4, 119, 196, 1)" /></Text>
                     </TouchableHighlight>
                 </FlexRow>
-                
+
             </Head>
             <ScrollView keyboardShouldPersistTaps='handled' contentContainerStyle={{ flexGrow: 1 }}>
                 <Container>
@@ -172,7 +189,8 @@ export default function Receitas({ navigation, itens, addItem }) {
                                     zIndex: 10,
                                 }}
                                 color="rgb(4, 119, 196)"
-                                />
+                            />
+                            <TextTitleName>Adicionar Receita</TextTitleName>
                             <Select>
                                 <Texto>Categoria</Texto>
                                 <Picker
@@ -234,7 +252,7 @@ export default function Receitas({ navigation, itens, addItem }) {
                         onRequestClose={() => {
                             setSearch(false);
                         }}>
-                            <Forms>
+                        <Forms>
                             <Icon
                                 onPress={() => setSearch(false)}
                                 name="cancel"
@@ -247,11 +265,22 @@ export default function Receitas({ navigation, itens, addItem }) {
                                 }}
                                 color="rgb(4, 119, 196)"
                             />
-                            <TextInputStyled placeholder="Pesquisar Receita" onChangeText={(value) => onChange(value)} autoFocus={true} autoCapitalize="characters"  />
-                            </Forms>
+                            <TextInputStyled placeholder="Pesquisar Receita" onChangeText={(value) => onChange(value)} autoFocus={true} autoCapitalize="characters" />
+                        </Forms>
                     </ModalIten>
                 </Container>
             </ScrollView>
         </>
     );
 }
+
+const styles = StyleSheet.create({
+    font: {
+      fontFamily: 'OpenSans_400Regular'
+    },
+
+    fontBold: {
+        fontFamily: 'OpenSans_600SemiBold'
+      },
+    
+  });

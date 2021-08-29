@@ -12,7 +12,6 @@ export const Container = styled.View`
 
 export const TextInputStyled = styled.TextInput`
   padding: 10px;
-  padding-left: 0px;
   padding-bottom: 0px;
   margin-bottom: 10px;
   width: 100%;

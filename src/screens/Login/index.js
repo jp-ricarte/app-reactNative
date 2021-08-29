@@ -20,7 +20,7 @@ import {
 import { Container } from '../../../global';
 import api from "../../services/api";
 
-export default function Login({ navigation }) {
+export default function Login({ routes, navigation }) {
   const { control, handleSubmit, errors } = useForm();
   const [hide, sethide] = useState(true);
   const [loading, setLoading] = useState(false);

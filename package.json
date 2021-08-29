@@ -8,6 +8,7 @@
     "eject": "expo eject"
   },
   "dependencies": {
+    "@expo-google-fonts/open-sans": "^0.2.0",
     "@react-native-async-storage/async-storage": "^1.15.5",
     "@react-native-community/async-storage": "^1.12.1",
     "@react-native-community/masked-view": "^0.1.10",
@@ -22,6 +23,7 @@
     "axios": "^0.21.1",
     "expo": "~39.0.2",
     "expo-application": "^3.2.0",
+    "expo-font": "~8.3.0",
     "expo-google-app-auth": "^8.2.2",
     "expo-google-sign-in": "~8.3.0",
     "expo-permissions": "~9.3.0",

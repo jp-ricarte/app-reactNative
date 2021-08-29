@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState } from "react";
+import { useFocusEffect } from '@react-navigation/native';
 import {
   Button,
   Alert,
@@ -12,7 +13,6 @@ import Icon from "react-native-vector-icons/MaterialIcons";
 import { useForm, Controller } from "react-hook-form";
 import { Picker } from '@react-native-picker/picker';
 import {
-  Container,
   Texto,
   TextCard,
   TextInputStyled,
@@ -21,6 +21,7 @@ import {
   CardItem,
   Select
 } from "../Receitas/styles";
+import { Container } from "../../../global";
 import api from "../../services/api";
 import { TextTitleName } from "../Home/styles";
 
@@ -49,9 +50,11 @@ export default function Categorias({ navigation }) {
     }
   }
 
-  useEffect(() => {
-    get();
-  }, []);
+  useFocusEffect(
+    React.useCallback(() => {
+        get();
+    }, [])
+);
 
   async function post(data) {
     setLoading(true);

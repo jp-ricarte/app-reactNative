@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useRef } from "react";
+import { useFocusEffect } from '@react-navigation/native';
 import moment from 'moment';
 import {
     Button,
@@ -34,6 +35,7 @@ import { Picker } from '@react-native-picker/picker';
 import { TextInputMask, TextMask } from 'react-native-masked-text'
 
 import api from "../../services/api";
+import { TextTitleName } from "../Home/styles";
 
 export default function Despesas({ navigation, itens, addItem }) {
     const { control, handleSubmit, errors } = useForm();
@@ -77,11 +79,13 @@ export default function Despesas({ navigation, itens, addItem }) {
 
 
 
-    useEffect(() => {
-        get();
-        getCategorias();
-        getDashboard();
-    }, [data]);
+    useFocusEffect(
+        React.useCallback(() => {
+            get();
+            getCategorias();
+            getDashboard();
+        }, [])
+    );
 
     async function post(data) {
         try {
@@ -112,20 +116,20 @@ export default function Despesas({ navigation, itens, addItem }) {
                 },
                 shadowOpacity: 0.23,
                 shadowRadius: 2.62,
-                
+
                 elevation: 4,
             }}>
                 <TextHead>Despesa Total</TextHead>
                 <FlexRow>
-                    <TouchableHighlight style={{borderRadius: 50}} activeOpacity={0.5} underlayColor="#dddd" onPress={() => setModalVisible(true)}>
+                    <TouchableHighlight style={{ borderRadius: 50 }} activeOpacity={0.5} underlayColor="#dddd" onPress={() => setModalVisible(true)}>
                         <Text><Icon name="add" size={30} color="rgba(4, 119, 196, 1)" /></Text>
                     </TouchableHighlight>
-                    <TextCash> <TextMask value={despesaTotal} type={'money'} /> </TextCash> 
-                    <TouchableHighlight style={{borderRadius: 50}} activeOpacity={0.5} underlayColor="#dddd" onPress={() => setModalVisible(true)}>
+                    <TextCash> <TextMask value={despesaTotal} type={'money'} /> </TextCash>
+                    <TouchableHighlight style={{ borderRadius: 50 }} activeOpacity={0.5} underlayColor="#dddd" onPress={() => setModalVisible(true)}>
                         <Text><Icon name="search" size={30} color="rgba(4, 119, 196, 1)" /></Text>
                     </TouchableHighlight>
                 </FlexRow>
-                
+
             </Head>
             <ScrollView keyboardShouldPersistTaps='handled' contentContainerStyle={{ flexGrow: 1 }}>
                 <Container>
@@ -171,7 +175,7 @@ export default function Despesas({ navigation, itens, addItem }) {
                                 }}
                                 color="rgb(4, 119, 196)"
                             />
-
+                            <TextTitleName>Adicionar Despesa</TextTitleName>
                             <Select>
                                 <Texto>Categoria</Texto>
                                 <Picker
