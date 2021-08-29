@@ -5,7 +5,6 @@ import { Container } from "../../../global";
 import Icon from "react-native-vector-icons/AntDesign";
 import { UL, LI } from "./styles";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useState } from "react/cjs/react.development";
 
 export default function Configurações({ navigation }) {
 

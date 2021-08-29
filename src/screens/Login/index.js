@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Text, View, TextInput, Button, Alert, Image, ActivityIndicator, StyleSheet } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import IconCommunity from "react-native-vector-icons/MaterialCommunityIcons";
@@ -18,8 +18,6 @@ import {
 } from "./styles";
 
 import { Container } from '../../../global';
-
-import { useState, useEffect } from "react/cjs/react.development";
 import api from "../../services/api";
 
 export default function Login({ navigation }) {

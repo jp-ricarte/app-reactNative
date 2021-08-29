@@ -66,8 +66,10 @@ export default function Despesas({ navigation, itens, addItem }) {
     async function getCategorias() {
         try {
             const cat = await api.get('/categorias');
-            setCategorias(cat.data.categorias);
-            console.log(categorias);
+            const catReceitas = cat.data.categorias.filter(cat => {
+                return !cat.ctg_tipo;
+            });
+            setCategorias(catReceitas);
         } catch (err) {
             console.log(err.response.data);
         }

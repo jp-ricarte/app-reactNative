@@ -22,18 +22,28 @@ import {
   Select
 } from "../Receitas/styles";
 import api from "../../services/api";
+import { TextTitleName } from "../Home/styles";
 
 export default function Categorias({ navigation }) {
   const [selectedLanguage, setSelectedLanguage] = useState(true);
   const { control, handleSubmit, errors } = useForm();
   const [modalVisible, setModalVisible] = useState(false);
-  const [data, setData] = useState([]);
+  const [dataReceita, setDataReceita] = useState([]);
+  const [dataDespesa, setDataDespesa] = useState([]);
   const [loading, setLoading] = useState(false);
 
   async function get() {
     try {
-      const res = await api.get('/categorias');
-      setData(res.data.categorias);
+      const cat = await api.get('/categorias');
+      const catReceitas = cat.data.categorias.filter(cat => {
+        return cat.ctg_tipo;
+      });
+      setDataReceita(catReceitas);
+
+      const catDespesas = cat.data.categorias.filter(cat => {
+        return !cat.ctg_tipo;
+      });
+      setDataDespesa(catDespesas);
     } catch (err) {
       console.log(err.response.data);
     }
@@ -66,15 +76,27 @@ export default function Categorias({ navigation }) {
           title="&#8853; Adicionar"
           color="#0477C4"
         />
-        {data ? (
-          data.map((ctg) => (
+        <TextTitleName>Categorias Receita</TextTitleName>
+        {dataReceita ? (
+          dataReceita.map((ctg) => (
+            <CardItem key={ctg.ctg_id}>
+              <TextCard>{ctg.ctg_nome}</TextCard>
+            </CardItem>
+          ))
+          
+          ) : (
+            <Text>Adicione categorias de receita</Text>
+            )}
+            <TextTitleName>Categorias Despesa</TextTitleName>
+        {dataDespesa ? (
+          dataDespesa.map((ctg) => (
             <CardItem key={ctg.ctg_id}>
               <TextCard>{ctg.ctg_nome}</TextCard>
             </CardItem>
           ))
 
         ) : (
-          <Text>Adicione uma categoria</Text>
+          <Text>Adicione categorias de despesa</Text>
         )}
         <ModalIten
           animationType="slide"

@@ -25,7 +25,6 @@ export default function Home({ navigation }) {
 
   async function getUser() {
     const nome = await AsyncStorage.getItem('nome');
-    console.log('[nome]', nome)
     setNome(nome);
   }
 
@@ -33,7 +32,6 @@ export default function Home({ navigation }) {
     try {
       const res = await api.get('/dashboard');
       setData(res.data);
-      console.log(data);
 
     } catch (err) {
       console.log(err);
