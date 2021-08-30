@@ -54,12 +54,12 @@ export default function Home({ navigation }) {
             <>
               <Wellcome>
                 {hora < '12' && hora >= '5' && (
-                  <TextTitle>Bom dia, <TextTitleName>{nome}!</TextTitleName></TextTitle>
+                  <TextTitle style={styles.font}>Bom dia, <TextTitleName>{nome}!</TextTitleName></TextTitle>
                 )} 
                 {hora >= '12' && hora < '18' && (
-                  <TextTitle>Boa tarde, <TextTitleName>{nome}!</TextTitleName></TextTitle>
+                  <TextTitle style={styles.font}>Boa tarde, <TextTitleName>{nome}!</TextTitleName></TextTitle>
                 )}
-                {hora >= '18' || hora < '5' && (
+                {hora >= '18' && (
                   <TextTitle style={styles.font}>Boa noite, <TextTitleName>{nome}!</TextTitleName></TextTitle>
                 )}
               </Wellcome>
