@@ -4,6 +4,8 @@ export const Container = styled.View`
   display: flex;
   width: 100%;
   height: 100%;
+  padding-top: 15%;
+  background-color: #fff;
 `;
 
 export const FlexRow = styled.View`

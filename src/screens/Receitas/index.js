@@ -178,7 +178,7 @@ export default function Receitas({ navigation, itens, addItem }) {
         <Container>
           {data ? (
             data.map((r) => (
-              <TouchableHighlight onPress={() => getEdit(r.receita_id)} activeOpacity={0.5} underlayColor="#dddd" key={r.receita_id}>
+              <TouchableHighlight style={{paddingBottom: 12 }} onPress={() => getEdit(r.receita_id)} activeOpacity={0.5} underlayColor="#dddd" key={r.receita_id}>
                 <CardItem>
                   <View>
                     <TextCard>{r.receita_descricao}</TextCard>
