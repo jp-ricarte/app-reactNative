@@ -46,7 +46,7 @@ export default function Despesas({ navigation, itens, addItem }) {
   const [despesaTotal, setDespesaTotal] = useState();
   const [categorias, setCategorias] = useState([]);
   const [selectedCategoria, setSelectedCategoria] = useState();
-  const [money, setMoney] = useState();
+  const [money, setMoney] = useState(0);
   const [edit, setEdit] = useState();
   const [objectEdit, setObjectEdit] = useState();
   const [search, setSearch] = useState(false);
@@ -98,20 +98,21 @@ export default function Despesas({ navigation, itens, addItem }) {
   }
 
   function getEdit(id) {
-    setModalVisible(true);
-    setEdit(true);
-
+    
     const objectSelected = data.find(obj => {
       return obj.despesa_id == id;
     })
-
+    
+    setMoney(objectSelected.despesa_valor);
+    setSelectedCategoria(objectSelected.despesa_categoria);
+    setModalVisible(true);
+    setEdit(true);
     setObjectEdit(objectSelected);
-    console.log(objectEdit);
-
   }
 
-  async function patch() {
-
+  async function patch(data) {
+    console.log('[objectEdit]', objectEdit);
+    console.log('[data]', data);
   }
 
   async function deletar(id) {
@@ -264,7 +265,7 @@ export default function Despesas({ navigation, itens, addItem }) {
                 <TextInputMask
                   style={{ fontSize: 25 }}
                   type={'money'}
-                  value={objectEdit ? objectEdit.despesa_valor : money}
+                  value={money}
                   onChangeText={text => setMoney(text)}
                   ref={moneyRef}
                 />
@@ -272,7 +273,7 @@ export default function Despesas({ navigation, itens, addItem }) {
               {edit ? (
                 <>
                   <Button
-                    onPress={handleSubmit(post)}
+                    onPress={handleSubmit(patch)}
                     title="EDITAR"
                   />
                   <View style={{margin:10}}></View>

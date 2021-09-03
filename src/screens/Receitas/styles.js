@@ -88,7 +88,7 @@ export const TextInputStyled = styled.TextInput`
   width: 100%;
   color: #000;
   border-bottom-width: 1.5px;
-  border-bottom-color: green;
+  border-bottom-color: #0477C4;
   font-size: 20px;
   `;
   
@@ -100,7 +100,7 @@ export const TextInputStyled = styled.TextInput`
   width: 100%;
   color: #000;
   border-bottom-width: 1.5px;
-  border-bottom-color: green;
+  border-bottom-color: #0477C4;
   `;
   
 export const Forms = styled.View`

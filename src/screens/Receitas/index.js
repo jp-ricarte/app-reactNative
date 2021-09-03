@@ -51,13 +51,13 @@ export default function Receitas({ navigation, itens, addItem }) {
   const [objectEdit, setObjectEdit] = useState();
   const [search, setSearch] = useState(false);
   const moneyRef = useRef(null);
-  
+
   let [fontsLoaded] = useFonts({
     OpenSans_600SemiBold,
     OpenSans_400Regular
   });
-  
-  
+
+
   async function get() {
     try {
       const res = await api.get('/receitas');
@@ -74,7 +74,7 @@ export default function Receitas({ navigation, itens, addItem }) {
       getDashboard();
     }, [])
   );
-  
+
   async function getDashboard() {
     try {
       const res = await api.get('/dashboard');
@@ -139,7 +139,7 @@ export default function Receitas({ navigation, itens, addItem }) {
       data.receita_valor = moneyUnmask;
       setMoney(0);
       await api.post('/receitas', data);
-      
+
       get();
       getDashboard();
       setModalVisible(false);
@@ -177,7 +177,7 @@ export default function Receitas({ navigation, itens, addItem }) {
         <Container>
           {data ? (
             data.map((r) => (
-              <TouchableHighlight style={{paddingBottom: 12 }} onPress={() => getEdit(r.receita_id)} activeOpacity={0.5} underlayColor="#dddd" key={r.receita_id}>
+              <TouchableHighlight style={{ paddingBottom: 12 }} onPress={() => getEdit(r.receita_id)} activeOpacity={0.5} underlayColor="#dddd" key={r.receita_id}>
                 <CardItem>
                   <View>
                     <TextCard>{r.receita_descricao}</TextCard>
@@ -257,6 +257,7 @@ export default function Receitas({ navigation, itens, addItem }) {
                 rules={{ required: true }}
                 defaultValue={objectEdit ? objectEdit.receita_descricao : ""}
               />
+
               <Texto>Valor da Receita</Texto>
               <Select>
                 <TextInputMask
@@ -267,13 +268,14 @@ export default function Receitas({ navigation, itens, addItem }) {
                   ref={moneyRef}
                 />
               </Select>
+
               {edit ? (
                 <>
                   <Button
                     onPress={handleSubmit(post)}
                     title="EDITAR"
                   />
-                  <View style={{margin:10}}></View>
+                  <View style={{ margin: 10 }}></View>
                   <Button
                     onPress={() => deletar(objectEdit.receita_id)}
                     title="deletar"
