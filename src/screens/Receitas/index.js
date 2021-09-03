@@ -129,7 +129,6 @@ export default function Receitas({ navigation, itens, addItem }) {
   }
 
   async function post(data) {
-    console.log('??',data);
     try {
       if (categorias.length == 1 || selectedCategoria == undefined) {
         data.receita_categoria = categorias[0].ctg_id;
@@ -138,7 +137,7 @@ export default function Receitas({ navigation, itens, addItem }) {
       }
       const moneyUnmask = moneyRef?.current.getRawValue();
       data.receita_valor = moneyUnmask;
- 
+      setMoney(0);
       await api.post('/receitas', data);
       
       get();

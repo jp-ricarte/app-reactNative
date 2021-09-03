@@ -139,7 +139,7 @@ export default function Despesas({ navigation, itens, addItem }) {
       }
       const moneyUnmask = moneyRef?.current.getRawValue();
       data.despesa_valor = moneyUnmask;
- 
+      setMoney(0);
       await api.post('/despesas', data);
       
       get();

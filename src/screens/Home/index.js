@@ -53,7 +53,7 @@ export default function Home({ navigation }) {
           {data.receita && data.despesa ? (
             <>
               <Wellcome>
-                {hora < '12' && hora >= '5' && (
+                {hora < '12' && (
                   <TextTitle style={styles.font}>Bom dia, <TextTitleName>{nome}!</TextTitleName></TextTitle>
                 )} 
                 {hora >= '12' && hora < '18' && (
