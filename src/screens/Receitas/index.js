@@ -1,15 +1,14 @@
 import React, { useState, useRef } from "react";
 import { useFocusEffect } from '@react-navigation/native';
 import moment from 'moment';
+import Toast from 'react-native-toast-message';
 import {
   Button,
   Alert,
   View,
   Text,
   ScrollView,
-  TouchableOpacity,
   TouchableHighlight,
-  ActivityIndicator,
   StyleSheet
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
@@ -24,12 +23,10 @@ import {
   Forms,
   ModalIten,
   CardItem,
-  ButtonAdd,
   Select,
   Head,
   TextHead,
   FlexRow,
-  ButtonHead,
 
 } from "./styles";
 import { Picker } from '@react-native-picker/picker';
@@ -64,6 +61,11 @@ export default function Receitas({ navigation, itens, addItem }) {
       setData(res.data.receitas);
     } catch (err) {
       console.log(err.response.data);
+      Toast.show({
+        type: 'error',
+        text1: 'Ocorreu um erro ao carregar as receitas!',
+        position: 'bottom'
+      });
     }
   }
 
@@ -81,6 +83,11 @@ export default function Receitas({ navigation, itens, addItem }) {
       setReceitaTotal(res.data[0].receita);
     } catch (err) {
       console.log(err.response.data);
+      Toast.show({
+        type: 'error',
+        text1: 'Ocorreu um erro ao carregar o valor total da receitas!',
+        position: 'bottom'
+      });
     }
   }
 
@@ -94,24 +101,59 @@ export default function Receitas({ navigation, itens, addItem }) {
 
     } catch (err) {
       console.log(err.response.data);
+      Toast.show({
+        type: 'error',
+        text1: 'Ocorreu um erro ao carregar as categorias!',
+        position: 'bottom'
+      });
     }
   }
 
   function getEdit(id) {
-    setModalVisible(true);
-    setEdit(true);
-
+    
     const objectSelected = data.find(obj => {
       return obj.receita_id == id;
     })
 
+    setMoney(objectSelected.receita_valor);
+    setSelectedCategoria(objectSelected.receita_categoria);
+    setModalVisible(true);
+    setEdit(true);
     setObjectEdit(objectSelected);
     console.log(objectEdit);
 
   }
 
-  async function patch() {
-
+  async function patch(data) {
+    console.log('[money]', money)
+    if (typeof money !== 'number') {
+       const moneyUnmask = moneyRef?.current.getRawValue();
+       data.receita_valor = moneyUnmask;
+    }
+    data.receita_categoria = selectedCategoria;
+    console.log('[objectEdit]', objectEdit);
+    console.log('[selectedCategoria]', selectedCategoria);
+    console.log('[data]', data);
+    try {
+      await api.patch(`receitas/${objectEdit.receita_id}`, data);
+      setModalVisible(false);
+      setEdit(false);
+      setObjectEdit(false);
+      get();
+      getCategorias();
+      getDashboard();
+      Toast.show({
+        text1: 'Receita Editada!',
+        position: 'bottom'
+      });
+    }catch(err) {
+      console.log(err);
+      Toast.show({
+        type: 'error',
+        text1: 'Ocorreu um erro ao editar a receita!',
+        position: 'bottom'
+      });
+    }
   }
 
   async function deletar(id) {
@@ -125,6 +167,11 @@ export default function Receitas({ navigation, itens, addItem }) {
       getDashboard();
     } catch (err) {
       console.log(err);
+      Toast.show({
+        type: 'error',
+        text1: 'Ocorreu um erro ao deletar a receita!',
+        position: 'bottom'
+      });
     }
   }
 
@@ -145,6 +192,11 @@ export default function Receitas({ navigation, itens, addItem }) {
       setModalVisible(false);
     } catch (error) {
       console.log(error.response.data);
+      Toast.show({
+        type: 'error',
+        text1: 'Ocorreu um erro ao criar a receita!',
+        position: 'bottom'
+      });
     }
   }
 
@@ -177,7 +229,7 @@ export default function Receitas({ navigation, itens, addItem }) {
         <Container>
           {data ? (
             data.map((r) => (
-              <TouchableHighlight style={{ paddingBottom: 12 }} onPress={() => getEdit(r.receita_id)} activeOpacity={0.5} underlayColor="#dddd" key={r.receita_id}>
+              <TouchableHighlight style={{ paddingBottom: 6 }} onPress={() => getEdit(r.receita_id)} activeOpacity={0.5} underlayColor="#dddd" key={r.receita_id}>
                 <CardItem>
                   <View>
                     <TextCard>{r.receita_descricao}</TextCard>
@@ -206,6 +258,7 @@ export default function Receitas({ navigation, itens, addItem }) {
               setModalVisible(false);
             }}
           >
+            <ScrollView keyboardShouldPersistTaps='handled' contentContainerStyle={{ flexGrow: 1 }}>
             <Forms>
               <Icon
                 onPress={() => setModalVisible(false)}
@@ -263,7 +316,7 @@ export default function Receitas({ navigation, itens, addItem }) {
                 <TextInputMask
                   style={{ fontSize: 25 }}
                   type={'money'}
-                  value={objectEdit ? objectEdit.receita_valor : money}
+                  value={money}
                   onChangeText={text => setMoney(text)}
                   ref={moneyRef}
                 />
@@ -272,7 +325,7 @@ export default function Receitas({ navigation, itens, addItem }) {
               {edit ? (
                 <>
                   <Button
-                    onPress={handleSubmit(post)}
+                    onPress={handleSubmit(patch)}
                     title="EDITAR"
                   />
                   <View style={{ margin: 10 }}></View>
@@ -291,6 +344,7 @@ export default function Receitas({ navigation, itens, addItem }) {
 
               )}
             </Forms>
+            </ScrollView>
           </ModalIten>
           <ModalIten
             animationType="slide"
@@ -317,6 +371,7 @@ export default function Receitas({ navigation, itens, addItem }) {
           </ModalIten>
         </Container>
       </ScrollView>
+      <Toast ref={(ref) => Toast.setRef(ref)} />
     </>
   );
 }

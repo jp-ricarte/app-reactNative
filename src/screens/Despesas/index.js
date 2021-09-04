@@ -1,6 +1,7 @@
 import React, { useState, useRef } from "react";
 import { useFocusEffect } from '@react-navigation/native';
 import moment from 'moment';
+import Toast from 'react-native-toast-message';
 import {
   Button,
   Alert,
@@ -62,11 +63,12 @@ export default function Despesas({ navigation, itens, addItem }) {
     try {
       const res = await api.get('/despesas');
       setData(res.data.despesas);
+      
     } catch (err) {
       console.log(err.response.data);
     }
   }
-
+  
   useFocusEffect(
     React.useCallback(() => {
       get();
@@ -111,8 +113,29 @@ export default function Despesas({ navigation, itens, addItem }) {
   }
 
   async function patch(data) {
+    if (typeof money !== 'number') {
+       const moneyUnmask = moneyRef?.current.getRawValue();
+       data.despesa_valor = moneyUnmask;
+    }
+    data.despesa_categoria = selectedCategoria;
     console.log('[objectEdit]', objectEdit);
+    console.log('[selectedCategoria]', selectedCategoria);
     console.log('[data]', data);
+    try {
+      await api.patch(`despesas/${objectEdit.despesa_id}`, data);
+      setModalVisible(false);
+      setEdit(false);
+      setObjectEdit(false);
+      get();
+      getCategorias();
+      getDashboard();
+      Toast.show({
+        text1: 'Despesa Editada!',
+        position: 'bottom'
+      });
+    }catch(err) {
+      console.log(err);
+    }
   }
 
   async function deletar(id) {
@@ -176,11 +199,13 @@ export default function Despesas({ navigation, itens, addItem }) {
         </FlexRow>
 
       </Head>
+
       <ScrollView keyboardShouldPersistTaps='handled' contentContainerStyle={{ flexGrow: 1 }}>
+        
         <Container>
           {data ? (
             data.map((r) => (
-              <TouchableHighlight style={{paddingBottom: 12 }} onPress={() => getEdit(r.despesa_id)} activeOpacity={0.5} underlayColor="#dddd" key={r.despesa_id}>
+              <TouchableHighlight style={{paddingBottom: 6 }} onPress={() => getEdit(r.despesa_id)} activeOpacity={0.5} underlayColor="#dddd" key={r.despesa_id}>
                 <CardItem>
                   <View>
                     <TextCard>{r.despesa_descricao}</TextCard>
@@ -209,6 +234,7 @@ export default function Despesas({ navigation, itens, addItem }) {
               setModalVisible(false);
             }}
           >
+            <ScrollView keyboardShouldPersistTaps='handled' contentContainerStyle={{ flexGrow: 1 }}>
             <Forms>
               <Icon
                 onPress={() => setModalVisible(false)}
@@ -292,6 +318,7 @@ export default function Despesas({ navigation, itens, addItem }) {
 
               )}
             </Forms>
+            </ScrollView>
           </ModalIten>
           <ModalIten
             animationType="slide"
@@ -318,6 +345,7 @@ export default function Despesas({ navigation, itens, addItem }) {
           </ModalIten>
         </Container>
       </ScrollView>
+      <Toast ref={(ref) => Toast.setRef(ref)} />
     </>
   );
 }

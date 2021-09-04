@@ -54,7 +54,7 @@ export const CardItem = styled.View`
   align-self: center;
   background-color: #fff;
   width: 95%;
-  margin-top: 10px;
+  margin-top: 6px;
   padding: 15px;
   border-radius: 5px;
 `;

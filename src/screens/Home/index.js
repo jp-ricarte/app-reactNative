@@ -18,6 +18,8 @@ export default function Home({ navigation }) {
   const [nome, setNome] = useState();
   const [data, setData] = useState([]);
   const [mes, setMes] = useState();
+  const [receitaTotal, setReceitaTotal] = useState();
+  const [despesaTotal, setDespesaTotal] = useState();
 
   let [fontsLoaded] = useFonts({
     OpenSans_600SemiBold,
@@ -32,6 +34,8 @@ export default function Home({ navigation }) {
   async function getDashboard() {
     try {
       const res = await api.get('/dashboard');
+      setReceitaTotal(res.data[0].receitaMensal);
+      setDespesaTotal(res.data[0].despesaMensal);
       setData(res.data);
 
     } catch (err) {
@@ -49,8 +53,8 @@ export default function Home({ navigation }) {
   return (
     <Container>
       {data.map(data => (
-        <>
-          {data.receita && data.despesa ? (
+        <View key={data.saldoMensal}>
+          {data.receitaMensal && data.despesaMensal ? (
             <>
               <Wellcome>
                 {hora < '12' && (
@@ -63,7 +67,15 @@ export default function Home({ navigation }) {
                   <TextTitle style={styles.font}>Boa noite, <TextTitleName>{nome}!</TextTitleName></TextTitle>
                 )}
               </Wellcome>
-              <Wellcome>
+              <Wellcome style={{marginTop: 0, paddingTop: 5}}>
+                <Text style={styles.font}>Receita total :</Text>
+                  <TextTitle style={styles.font}><TextCash> <TextMask value={receitaTotal} type={'money'} /> </TextCash></TextTitle>
+              </Wellcome>
+              <Wellcome style={{marginTop: 0, paddingTop: 0}}>
+                <Text style={styles.font}>Despesa total :</Text>
+                <TextTitle style={styles.font}><TextCashRed>- <TextMask value={despesaTotal} type={'money'} /> </TextCashRed></TextTitle>
+              </Wellcome>
+              <Wellcome style={{marginTop: 0, paddingTop: 5}}>
                 <Text style={styles.font}>Seu saldo nesse mês de <Text style={{ fontWeight: 'bold' }}>{mes}</Text> é:</Text>
                 {data.saldoResultado == 'Lucro' ? (
                   <TextTitle style={styles.font}><TextCash> <TextMask value={data.saldoMensal} type={'money'} /> </TextCash></TextTitle>
@@ -77,19 +89,29 @@ export default function Home({ navigation }) {
                   <IconFontAwesome name="dollar" size={20} color="rgba(255, 255, 255, 1)" />
                 </ViewIcon>
                 <View style={{ width: '88%', padding: 10 }}>
+                  <Text style={{ color: '#969696' }}>Categoria mais lucrativa</Text>
+                  <FlexRow>
+                    <Text style={styles.font}>{data.maiorReceita.receita_descricao}</Text>
+                    <Text style={styles.font}><TextCash style={{ fontSize: 14 }}><TextMask value={data.maiorReceita.receita_valor} type={'money'} /></TextCash></Text>
+                  </FlexRow>
                   <Text style={{ color: '#969696' }}>Maior Receita</Text>
                   <FlexRow>
                     <Text style={styles.font}>{data.maiorReceita.receita_descricao}</Text>
                     <Text style={styles.font}><TextCash style={{ fontSize: 14 }}><TextMask value={data.maiorReceita.receita_valor} type={'money'} /></TextCash></Text>
                   </FlexRow>
                 </View>
-
+                
               </CardReceitaDespesa>
               <CardReceitaDespesa>
                 <ViewIcon style={{ backgroundColor: 'red' }}>
                   <IconFontAwesome name="dollar" size={20} color="rgba(255, 255, 255, 1)" />
                 </ViewIcon>
                 <View style={{ width: '88%', padding: 10 }}>
+                <Text style={{ color: '#969696', fontFamily: 'OpenSans_400Regular' }}>Categoria mais prejuízo</Text>
+                  <FlexRow>
+                    <Text style={styles.font}>{data.maiorDespesa.despesa_descricao}</Text>
+                    <Text style={styles.font}><TextCashRed style={{ fontSize: 14 }}>- <TextMask value={data.maiorDespesa.despesa_valor} type={'money'} /></TextCashRed></Text>
+                  </FlexRow>
                   <Text style={{ color: '#969696', fontFamily: 'OpenSans_400Regular' }}>Maior Despesa</Text>
                   <FlexRow>
                     <Text style={styles.font}>{data.maiorDespesa.despesa_descricao}</Text>
@@ -101,7 +123,7 @@ export default function Home({ navigation }) {
           ) : (
             <TextTitleName>Adicione receitas e despesas</TextTitleName>
           )}
-        </>
+        </View>
 
       ))}
     </Container>

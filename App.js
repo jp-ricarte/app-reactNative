@@ -13,11 +13,8 @@ import { PersistGate } from "redux-persist/integration/react";
 import { HomeTabs } from './src/components/Navigation/index'
 
 import Login from "./src/screens/Login/index";
-import Home from "./src/screens/Home/index";
-import Receitas from "./src/screens/Receitas/index";
-import Despesas from "./src/screens/Despesas/index";  
-import Configurações from "./src/screens/Configurações/index";
-import { ScrollView } from "react-native";
+
+import Toast from 'react-native-toast-message';
 
 import Icon from "react-native-vector-icons/FontAwesome5";
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -82,7 +79,6 @@ export default function App({navigation}) {
                   component={HomeTabs}
                 />
               </Stack.Navigator>
-            
           </NavigationContainer>
           </PersistGate>
           </Provider>
