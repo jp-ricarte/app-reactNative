@@ -9,6 +9,7 @@ import Despesas from "../../screens/Despesas";
 import Configurações from "../../screens/Configurações";
 import Icon from "react-native-vector-icons/FontAwesome5";
 import Categorias from "../../screens/Categorias";
+import Toast from 'react-native-toast-message';
 
 const Tab = createBottomTabNavigator();
 
