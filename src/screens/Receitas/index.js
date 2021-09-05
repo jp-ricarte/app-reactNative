@@ -2,13 +2,16 @@ import React, { useState, useRef } from "react";
 import { useFocusEffect } from '@react-navigation/native';
 import moment from 'moment';
 import Toast from 'react-native-toast-message';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import {
   Button,
   Alert,
   View,
   Text,
   ScrollView,
+  TouchableOpacity,
   TouchableHighlight,
+  ActivityIndicator,
   StyleSheet
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
@@ -23,10 +26,12 @@ import {
   Forms,
   ModalIten,
   CardItem,
+  ButtonAdd,
   Select,
   Head,
   TextHead,
   FlexRow,
+  ButtonHead,
 
 } from "./styles";
 import { Picker } from '@react-native-picker/picker';
@@ -35,15 +40,20 @@ import { useFonts, OpenSans_600SemiBold, OpenSans_400Regular } from '@expo-googl
 import api from "../../services/api";
 import { Header } from "react-native/Libraries/NewAppScreen";
 import { TextTitleName } from "../Home/styles";
+import LoadingSkeleton from '../../components/LoadingSkeleton';
 
 export default function Receitas({ navigation, itens, addItem }) {
   const { control, handleSubmit, errors } = useForm();
+  const [loading, setLoading] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
   const [data, setData] = useState([]);
+  const [date, setDate] = useState(new Date());
   const [receitaTotal, setReceitaTotal] = useState();
   const [categorias, setCategorias] = useState([]);
   const [selectedCategoria, setSelectedCategoria] = useState();
-  const [money, setMoney] = useState();
+  const [money, setMoney] = useState(0);
+  const [showDate, setShowDate] = useState(false);
+  const [dateValue, setDateValue] = useState();
   const [edit, setEdit] = useState();
   const [objectEdit, setObjectEdit] = useState();
   const [search, setSearch] = useState(false);
@@ -54,18 +64,23 @@ export default function Receitas({ navigation, itens, addItem }) {
     OpenSans_400Regular
   });
 
+  const onChangeDate = (event, selectedDate) => {
+    const currentDate = selectedDate || date;
+    setShowDate(Platform.OS === 'ios');
+    const value = moment(currentDate).format('DD/MM/YYYY');
+    setDateValue(value);
+    setDate(currentDate);
+    console.log(dateValue);
+  };
 
   async function get() {
     try {
       const res = await api.get('/receitas');
       setData(res.data.receitas);
+      setLoading(false);
+
     } catch (err) {
       console.log(err.response.data);
-      Toast.show({
-        type: 'error',
-        text1: 'Ocorreu um erro ao carregar as receitas!',
-        position: 'bottom'
-      });
     }
   }
 
@@ -74,6 +89,7 @@ export default function Receitas({ navigation, itens, addItem }) {
       get();
       getCategorias();
       getDashboard();
+
     }, [])
   );
 
@@ -83,11 +99,6 @@ export default function Receitas({ navigation, itens, addItem }) {
       setReceitaTotal(res.data[0].receita);
     } catch (err) {
       console.log(err.response.data);
-      Toast.show({
-        type: 'error',
-        text1: 'Ocorreu um erro ao carregar o valor total da receitas!',
-        position: 'bottom'
-      });
     }
   }
 
@@ -95,42 +106,38 @@ export default function Receitas({ navigation, itens, addItem }) {
     try {
       const cat = await api.get('/categorias');
       const catReceitas = cat.data.categorias.filter(cat => {
-        return cat.ctg_tipo;
+        return !cat.ctg_tipo;
       });
       setCategorias(catReceitas);
 
     } catch (err) {
       console.log(err.response.data);
-      Toast.show({
-        type: 'error',
-        text1: 'Ocorreu um erro ao carregar as categorias!',
-        position: 'bottom'
-      });
     }
   }
 
   function getEdit(id) {
-    
+
     const objectSelected = data.find(obj => {
       return obj.receita_id == id;
     })
-
+    setShowDate(false);
     setMoney(objectSelected.receita_valor);
+    const value = moment(objectSelected.receita_data).format('DD/MM/YYYY');
+    setDateValue(value);
     setSelectedCategoria(objectSelected.receita_categoria);
+
     setModalVisible(true);
     setEdit(true);
     setObjectEdit(objectSelected);
-    console.log(objectEdit);
-
   }
 
   async function patch(data) {
-    console.log('[money]', money)
     if (typeof money !== 'number') {
-       const moneyUnmask = moneyRef?.current.getRawValue();
-       data.receita_valor = moneyUnmask;
+      const moneyUnmask = moneyRef?.current.getRawValue();
+      data.receita_valor = moneyUnmask;
     }
     data.receita_categoria = selectedCategoria;
+    data.receita_data = date;
     console.log('[objectEdit]', objectEdit);
     console.log('[selectedCategoria]', selectedCategoria);
     console.log('[data]', data);
@@ -146,19 +153,15 @@ export default function Receitas({ navigation, itens, addItem }) {
         text1: 'Receita Editada!',
         position: 'bottom'
       });
-    }catch(err) {
+    } catch (err) {
       console.log(err);
-      Toast.show({
-        type: 'error',
-        text1: 'Ocorreu um erro ao editar a receita!',
-        position: 'bottom'
-      });
     }
   }
 
   async function deletar(id) {
     try {
       await api.delete(`receitas/${id}`);
+      console.log(data);
       setModalVisible(false);
       setEdit(false);
       setObjectEdit(false);
@@ -166,16 +169,12 @@ export default function Receitas({ navigation, itens, addItem }) {
       getCategorias();
       getDashboard();
     } catch (err) {
-      console.log(err);
-      Toast.show({
-        type: 'error',
-        text1: 'Ocorreu um erro ao deletar a receita!',
-        position: 'bottom'
-      });
+      console.log(err.response.data);
     }
   }
 
   async function post(data) {
+    console.log('??', data);
     try {
       if (categorias.length == 1 || selectedCategoria == undefined) {
         data.receita_categoria = categorias[0].ctg_id;
@@ -184,7 +183,13 @@ export default function Receitas({ navigation, itens, addItem }) {
       }
       const moneyUnmask = moneyRef?.current.getRawValue();
       data.receita_valor = moneyUnmask;
+      data.receita_data = date;
       setMoney(0);
+      setDate();
+      Toast.show({
+        text1: 'Receita Criada!',
+        position: 'bottom'
+      });
       await api.post('/receitas', data);
 
       get();
@@ -192,186 +197,209 @@ export default function Receitas({ navigation, itens, addItem }) {
       setModalVisible(false);
     } catch (error) {
       console.log(error.response.data);
-      Toast.show({
-        type: 'error',
-        text1: 'Ocorreu um erro ao criar a receita!',
-        position: 'bottom'
-      });
     }
   }
 
   return (
     <>
-      <Head style={{
-        shadowColor: "#000",
-        shadowOffset: {
-          width: 0,
-          height: 2,
-        },
-        shadowOpacity: 0.23,
-        shadowRadius: 2.62,
+      <>
+        <Head style={{
+          shadowColor: "#000",
+          shadowOffset: {
+            width: 0,
+            height: 2,
+          },
+          shadowOpacity: 0.23,
+          shadowRadius: 2.62,
 
-        elevation: 4,
-      }}>
-        <TextHead>Receita Total</TextHead>
-        <FlexRow>
-          <TouchableHighlight style={{ borderRadius: 50 }} activeOpacity={0.5} underlayColor="#dddd" onPress={() => { setModalVisible(true); setEdit(false); setObjectEdit(null); }}>
-            <Text><Icon name="add" size={30} color="rgba(4, 119, 196, 1)" /></Text>
-          </TouchableHighlight>
-          <TextCash> <TextMask value={receitaTotal} type={'money'} /> </TextCash>
-          <TouchableHighlight style={{ borderRadius: 50 }} activeOpacity={0.5} underlayColor="#dddd" onPress={() => setSearch(true)}>
-            <Text><Icon name="search" size={30} color="rgba(4, 119, 196, 1)" /></Text>
-          </TouchableHighlight>
-        </FlexRow>
+          elevation: 4,
+        }}>
+          <TextHead>Receita Total</TextHead>
+          <FlexRow>
+            <TouchableHighlight style={{ borderRadius: 50 }} activeOpacity={0.5} underlayColor="#dddd" onPress={() => { setModalVisible(true); setEdit(false); setObjectEdit(null); setDateValue() }}>
+              <Text><Icon name="add" size={30} color="rgba(4, 119, 196, 1)" /></Text>
+            </TouchableHighlight>
+            <TextCash> <TextMask value={receitaTotal} type={'money'} /> </TextCash>
+            <TouchableHighlight style={{ borderRadius: 50 }} activeOpacity={0.5} underlayColor="#dddd" onPress={() => setSearch(true)}>
+              <Text><Icon name="search" size={30} color="rgba(4, 119, 196, 1)" /></Text>
+            </TouchableHighlight>
+          </FlexRow>
 
-      </Head>
-      <ScrollView keyboardShouldPersistTaps='handled' contentContainerStyle={{ flexGrow: 1 }}>
-        <Container>
-          {data ? (
-            data.map((r) => (
-              <TouchableHighlight style={{ paddingBottom: 6 }} onPress={() => getEdit(r.receita_id)} activeOpacity={0.5} underlayColor="#dddd" key={r.receita_id}>
-                <CardItem>
-                  <View>
-                    <TextCard>{r.receita_descricao}</TextCard>
-                    <TextCategory>{r.categoria.ctg_nome}</TextCategory>
-                    <TextCategory>{moment(r.created_at).format('DD/MM')}</TextCategory>
-                  </View>
-                  <TextCash>
-                    <TextMask
-                      value={r.receita_valor}
+        </Head>
+
+        <ScrollView keyboardShouldPersistTaps='handled' contentContainerStyle={{ flexGrow: 1 }}>
+
+          <Container>
+            {data ? (
+              data.map((r) => (
+                <TouchableHighlight style={{ paddingBottom: 6 }} onPress={() => getEdit(r.receita_id)} activeOpacity={0.5} underlayColor="#dddd" key={r.receita_id}>
+                  <CardItem>
+                    {loading ? (
+                      <LoadingSkeleton />
+                    ) : (
+                      <>
+                        <View>
+                          <TextCard>{r.receita_descricao}</TextCard>
+                          <TextCategory>{r.categoria.ctg_nome}</TextCategory>
+                          <TextCategory>{r.receita_data ? moment(r.receita_data).format('DD/MM') : moment(r.created_at
+                          ).format('DD/MM')}</TextCategory>
+                        </View>
+                        <TextCash>
+                          <TextMask
+                            value={r.receita_valor}
+                            type={'money'}
+                          />
+                        </TextCash>
+                      </>
+                    )}
+                  </CardItem>
+                </TouchableHighlight>
+              ))
+
+            ) : (
+              <Text>Não há receitas :(</Text>
+            )}
+            <ModalIten
+              animationType="slide"
+              transparent={true}
+              visible={modalVisible}
+              onRequestClose={() => {
+                setObjectEdit(null);
+                setModalVisible(false);
+              }}
+            >
+              <ScrollView keyboardShouldPersistTaps='handled' contentContainerStyle={{ flexGrow: 1 }}>
+                <Forms>
+                  <Icon
+                    onPress={() => setModalVisible(false)}
+                    name="cancel"
+                    size={35}
+                    style={{
+                      position: "relative",
+                      top: -15,
+                      left: "90%",
+                      zIndex: 10,
+                    }}
+                    color="rgb(4, 119, 196)"
+                  />
+                  <TextTitleName>{edit ? "Editar " : "Adicionar "}Receita</TextTitleName>
+                  <Select>
+                    <Texto>Categoria</Texto>
+                    <Picker
+
+                      style={{ height: 30, width: '100%', marginTop: 10, marginLeft: 0, fontSize: 24, }}
+                      selectedValue={selectedCategoria}
+                      onValueChange={(itemValue, itemIndex) =>
+                        setSelectedCategoria(itemValue)
+                      }>
+
+                      {categorias.map((ctg) => (
+                        <Picker.Item key={ctg.ctg_id} label={ctg.ctg_nome} value={ctg.ctg_id} />
+                      ))}
+
+                    </Picker>
+                  </Select>
+
+                  <Controller
+                    control={control}
+                    render={({ onChange, onBlur, value }) => (
+                      <>
+                        <Texto>Descrição da Receita</Texto>
+                        <TextInputStyled
+                          onBlur={onBlur}
+                          placeholder=""
+                          onChangeText={(value) => onChange(value)}
+                          value={value}
+                          autoFocus={true}
+                          autoCapitalize="characters"
+
+                        />
+                      </>
+                    )}
+                    name="receita_descricao"
+                    rules={{ required: true }}
+                    defaultValue={objectEdit ? objectEdit.receita_descricao : ""}
+                  />
+                  <Texto>Valor da Receita</Texto>
+                  <Select>
+                    <TextInputMask
+                      style={{ fontSize: 25 }}
                       type={'money'}
+                      value={money}
+                      onChangeText={text => setMoney(text)}
+                      ref={moneyRef}
                     />
-                  </TextCash>
-                </CardItem>
-              </TouchableHighlight>
-            ))
+                  </Select>
+                  {dateValue && <TextTitleName style={{ textAlign: 'center', marginBottom: 10 }}>{edit && !date ? moment(objectEdit.receita_data).format('DD/MM/YYYY') : dateValue}</TextTitleName>}
+                  <Button
+                    onPress={() => setShowDate(true)}
+                    title="selecione a data da receita"
+                  />
+                  {showDate && (
+                    <DateTimePicker
 
-          ) : (
-            <Text>Não há receitas :(</Text>
-          )}
-          <ModalIten
-            animationType="slide"
-            transparent={true}
-            visible={modalVisible}
-            onRequestClose={() => {
-              setObjectEdit(null);
-              setModalVisible(false);
-            }}
-          >
-            <ScrollView keyboardShouldPersistTaps='handled' contentContainerStyle={{ flexGrow: 1 }}>
-            <Forms>
-              <Icon
-                onPress={() => setModalVisible(false)}
-                name="cancel"
-                size={35}
-                style={{
-                  position: "relative",
-                  top: -15,
-                  left: "90%",
-                  zIndex: 10,
-                }}
-                color="rgb(4, 119, 196)"
-              />
-              <TextTitleName>{edit ? "Editar " : "Adicionar "}Receita</TextTitleName>
-              <Select>
-                <Texto>Categoria</Texto>
-                <Picker
-
-                  style={{ height: 30, width: '100%', marginTop: 10, marginLeft: 0, fontSize: 24, }}
-                  selectedValue={selectedCategoria}
-                  onValueChange={(itemValue, itemIndex) =>
-                    setSelectedCategoria(itemValue)
-                  }>
-
-                  {categorias.map((ctg) => (
-                    <Picker.Item key={ctg.ctg_id} label={ctg.ctg_nome} value={ctg.ctg_id} />
-                  ))}
-
-                </Picker>
-              </Select>
-
-              <Controller
-                control={control}
-                render={({ onChange, onBlur, value }) => (
-                  <>
-                    <Texto>Descrição da Receita</Texto>
-                    <TextInputStyled
-                      onBlur={onBlur}
-                      placeholder=""
-                      onChangeText={(value) => onChange(value)}
-                      value={value}
-                      autoFocus={true}
-                      autoCapitalize="characters"
-
+                      testID="dateTimePicker"
+                      value={date}
+                      mode="date"
+                      is24Hour={true}
+                      display="default"
+                      onChange={onChangeDate}
                     />
-                  </>
-                )}
-                name="receita_descricao"
-                rules={{ required: true }}
-                defaultValue={objectEdit ? objectEdit.receita_descricao : ""}
-              />
 
-              <Texto>Valor da Receita</Texto>
-              <Select>
-                <TextInputMask
-                  style={{ fontSize: 25 }}
-                  type={'money'}
-                  value={money}
-                  onChangeText={text => setMoney(text)}
-                  ref={moneyRef}
+                  )}
+                  <View style={{ marginTop: 40 }} />
+                  {edit ? (
+                    <>
+                      <Button
+                        onPress={handleSubmit(patch)}
+                        title="EDITAR"
+                      />
+                      <View style={{ margin: 10 }}></View>
+                      <Button
+                        onPress={() => deletar(objectEdit.receita_id)}
+                        title="deletar"
+                        color="red"
+                      />
+                    </>
+                  ) : (
+                    <Button
+                      onPress={handleSubmit(post)}
+                      title="confirmar"
+                      color="#0477C4"
+                    />
+
+                  )}
+                </Forms>
+              </ScrollView>
+            </ModalIten>
+            <ModalIten
+              animationType="slide"
+              transparent={true}
+              visible={search}
+              onRequestClose={() => {
+                setSearch(false);
+              }}>
+              <Forms>
+                <Icon
+                  onPress={() => setSearch(false)}
+                  name="cancel"
+                  size={35}
+                  style={{
+                    position: "relative",
+                    top: -15,
+                    left: "90%",
+                    zIndex: 10,
+                  }}
+                  color="rgb(4, 119, 196)"
                 />
-              </Select>
+                <TextInputStyled placeholder="Pesquisar Receita" onChangeText={(value) => onChange(value)} autoFocus={true} autoCapitalize="characters" />
+              </Forms>
+            </ModalIten>
+          </Container>
+        </ScrollView>
+        <Toast ref={(ref) => Toast.setRef(ref)} />
+      </>
 
-              {edit ? (
-                <>
-                  <Button
-                    onPress={handleSubmit(patch)}
-                    title="EDITAR"
-                  />
-                  <View style={{ margin: 10 }}></View>
-                  <Button
-                    onPress={() => deletar(objectEdit.receita_id)}
-                    title="deletar"
-                    color="red"
-                  />
-                </>
-              ) : (
-                <Button
-                  onPress={handleSubmit(post)}
-                  title="confirmar"
-                  color="#0477C4"
-                />
-
-              )}
-            </Forms>
-            </ScrollView>
-          </ModalIten>
-          <ModalIten
-            animationType="slide"
-            transparent={true}
-            visible={search}
-            onRequestClose={() => {
-              setSearch(false);
-            }}>
-            <Forms>
-              <Icon
-                onPress={() => setSearch(false)}
-                name="cancel"
-                size={35}
-                style={{
-                  position: "relative",
-                  top: -15,
-                  left: "90%",
-                  zIndex: 10,
-                }}
-                color="rgb(4, 119, 196)"
-              />
-              <TextInputStyled placeholder="Pesquisar Receita" onChangeText={(value) => onChange(value)} autoFocus={true} autoCapitalize="characters" />
-            </Forms>
-          </ModalIten>
-        </Container>
-      </ScrollView>
-      <Toast ref={(ref) => Toast.setRef(ref)} />
     </>
   );
 }

@@ -14,6 +14,14 @@ export const FlexRow = styled.View`
   justify-content: space-between;
 `;
 
+export const FlewRowCenter = styled.View`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 10px;
+`;
+
 export const ViewIcon = styled.View`
   display: flex;
   flex-direction: row;
