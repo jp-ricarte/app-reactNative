@@ -1,6 +1,7 @@
 import React, { useState, useRef } from "react";
 import { useFocusEffect } from '@react-navigation/native';
 import moment from 'moment';
+import 'moment-timezone';
 import Toast from 'react-native-toast-message';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {
@@ -68,9 +69,10 @@ export default function Receitas({ navigation, itens, addItem }) {
     const currentDate = selectedDate || date;
     setShowDate(Platform.OS === 'ios');
     const value = moment(currentDate).format('DD/MM/YYYY');
+    const valueDateToDatabase = moment(currentDate).format('YYYY-MM-DD');
     setDateValue(value);
     setDate(currentDate);
-    console.log(dateValue);
+    console.log(valueDateToDatabase);
   };
 
   async function get() {
@@ -89,7 +91,7 @@ export default function Receitas({ navigation, itens, addItem }) {
       get();
       getCategorias();
       getDashboard();
-
+      console.log(moment(new Date()).format())
     }, [])
   );
 
@@ -137,7 +139,7 @@ export default function Receitas({ navigation, itens, addItem }) {
       data.receita_valor = moneyUnmask;
     }
     data.receita_categoria = selectedCategoria;
-    data.receita_data = date;
+    data.receita_data = moment(date).format();
     console.log('[objectEdit]', objectEdit);
     console.log('[selectedCategoria]', selectedCategoria);
     console.log('[data]', data);
@@ -174,7 +176,6 @@ export default function Receitas({ navigation, itens, addItem }) {
   }
 
   async function post(data) {
-    console.log('??', data);
     try {
       if (categorias.length == 1 || selectedCategoria == undefined) {
         data.receita_categoria = categorias[0].ctg_id;
@@ -183,20 +184,24 @@ export default function Receitas({ navigation, itens, addItem }) {
       }
       const moneyUnmask = moneyRef?.current.getRawValue();
       data.receita_valor = moneyUnmask;
-      data.receita_data = date;
+      data.receita_data = moment(date).format();
+      console.log('??', data);
       setMoney(0);
-      setDate();
+      setDate(new Date());
+      setDateValue();
       Toast.show({
         text1: 'Receita Criada!',
         position: 'bottom'
       });
-      await api.post('/receitas', data);
+      await api.post('/receitas', data).then((response) => {
+
+      });
 
       get();
       getDashboard();
       setModalVisible(false);
     } catch (error) {
-      console.log(error.response.data);
+      console.log(error.response);
     }
   }
 
@@ -216,7 +221,7 @@ export default function Receitas({ navigation, itens, addItem }) {
         }}>
           <TextHead>Receita Total</TextHead>
           <FlexRow>
-            <TouchableHighlight style={{ borderRadius: 50 }} activeOpacity={0.5} underlayColor="#dddd" onPress={() => { setModalVisible(true); setEdit(false); setObjectEdit(null); setDateValue() }}>
+            <TouchableHighlight style={{ borderRadius: 50 }} activeOpacity={0.5} underlayColor="#dddd" onPress={() => { setModalVisible(true); setEdit(false); setObjectEdit(null); setDateValue(); setMoney(0) }}>
               <Text><Icon name="add" size={30} color="rgba(4, 119, 196, 1)" /></Text>
             </TouchableHighlight>
             <TextCash> <TextMask value={receitaTotal} type={'money'} /> </TextCash>
@@ -241,8 +246,7 @@ export default function Receitas({ navigation, itens, addItem }) {
                         <View>
                           <TextCard>{r.receita_descricao}</TextCard>
                           <TextCategory>{r.categoria.ctg_nome}</TextCategory>
-                          <TextCategory>{r.receita_data ? moment(r.receita_data).format('DD/MM') : moment(r.created_at
-                          ).format('DD/MM')}</TextCategory>
+                          <TextCategory>{r.receita_data ? moment(r.receita_data).format('DD/MM')  : moment(r.created_at).format('DD/MM')}</TextCategory>
                         </View>
                         <TextCash>
                           <TextMask

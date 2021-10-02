@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Text, View, TextInput, Button, Alert, Image, StyleSheet } from "react-native";
+import { Text, View, TextInput, Button, Alert, Image, StyleSheet, ScrollView } from "react-native";
+import { useFocusEffect } from '@react-navigation/native';
 import Icon from "react-native-vector-icons/FontAwesome5";
 import IconFontAwesome from "react-native-vector-icons/FontAwesome";
 import { useForm, Controller } from "react-hook-form";
@@ -43,93 +44,97 @@ export default function Home({ navigation }) {
     }
   }
 
-  useEffect(() => {
-    setHora(moment().format('HH'));
-    setMes(moment().format('MMMM'))
-    getUser();
-    getDashboard();
-  }, [data]);
+  useFocusEffect(
+    React.useCallback(() => {
+      setHora(moment().format('HH'));
+      setMes(moment().format('MMMM'))
+      getUser();
+      getDashboard();
+    }, [])
+  );
 
   return (
-    <Container>
-      {data.map(data => (
-        <View key={data.saldoMensal}>
-          {data.receitaMensal && data.despesaMensal ? (
-            <>
-              <Wellcome>
-                {hora < '12' && (
-                  <TextTitle style={styles.font}>Bom dia, <TextTitleName>{nome}!</TextTitleName></TextTitle>
-                )} 
-                {hora >= '12' && hora < '18' && (
-                  <TextTitle style={styles.font}>Boa tarde, <TextTitleName>{nome}!</TextTitleName></TextTitle>
-                )}
-                {hora >= '18' && (
-                  <TextTitle style={styles.font}>Boa noite, <TextTitleName>{nome}!</TextTitleName></TextTitle>
-                )}
-              </Wellcome>
-              <FlewRowCenter>
-                <Wellcome style={{marginTop: 0, paddingTop: 5}}>
-                  <Text style={{ fontFamily: 'OpenSans_400Regular', textAlign: 'center' }}>Receita Mensal:</Text>
+    <ScrollView keyboardShouldPersistTaps='handled' contentContainerStyle={{ flexGrow: 1 }}>
+      <Container>
+        {data.map(data => (
+          <View key={data.saldoMensal}>
+            {data.receitaMensal && data.despesaMensal ? (
+              <>
+                <Wellcome>
+                  {hora < '12' && (
+                    <TextTitle style={styles.font}>Bom dia, <TextTitleName>{nome}!</TextTitleName></TextTitle>
+                  )}
+                  {hora >= '12' && hora < '18' && (
+                    <TextTitle style={styles.font}>Boa tarde, <TextTitleName>{nome}!</TextTitleName></TextTitle>
+                  )}
+                  {hora >= '18' && (
+                    <TextTitle style={styles.font}>Boa noite, <TextTitleName>{nome}!</TextTitleName></TextTitle>
+                  )}
+                </Wellcome>
+                <FlewRowCenter>
+                  <Wellcome style={{ marginTop: 0, paddingTop: 5 }}>
+                    <Text style={{ fontFamily: 'OpenSans_400Regular', textAlign: 'center' }}>Receita Mensal:</Text>
                     <TextTitle style={styles.font}><TextCash> <TextMask value={receitaTotal} type={'money'} /> </TextCash></TextTitle>
+                  </Wellcome>
+
+                  <Wellcome style={{ marginTop: 0, marginBottom: 0, paddingTop: 0 }}>
+                    <Text style={{ fontFamily: 'OpenSans_400Regular', textAlign: 'center' }}>Despesa Mensal:</Text>
+                    <TextTitle style={styles.font}><TextCashRed>- <TextMask value={despesaTotal} type={'money'} /> </TextCashRed></TextTitle>
+                  </Wellcome>
+                </FlewRowCenter>
+
+                <Wellcome style={{ marginTop: 0, paddingTop: 5 }}>
+                  <Text style={styles.font}>Seu saldo nesse mês de <Text style={{ fontWeight: 'bold' }}>{mes}</Text> é:</Text>
+                  {data.saldoResultado == 'Lucro' ? (
+                    <TextTitle style={styles.font}><TextCash> <TextMask value={data.saldoMensal} type={'money'} /> </TextCash></TextTitle>
+
+                  ) : (
+                    <TextTitle style={styles.font}><TextCashRed>- <TextMask value={data.saldoMensal} type={'money'} /> </TextCashRed></TextTitle>
+                  )}
                 </Wellcome>
-                
-                <Wellcome style={{marginTop: 0, marginBottom: 0, paddingTop: 0}}>
-                  <Text style={{ fontFamily: 'OpenSans_400Regular', textAlign: 'center' }}>Despesa Mensal:</Text>
-                  <TextTitle style={styles.font}><TextCashRed>- <TextMask value={despesaTotal} type={'money'} /> </TextCashRed></TextTitle>
-                </Wellcome>
-              </FlewRowCenter>
+                <CardReceitaDespesa>
 
-              <Wellcome style={{marginTop: 0, paddingTop: 5}}>
-                <Text style={styles.font}>Seu saldo nesse mês de <Text style={{ fontWeight: 'bold' }}>{mes}</Text> é:</Text>
-                {data.saldoResultado == 'Lucro' ? (
-                  <TextTitle style={styles.font}><TextCash> <TextMask value={data.saldoMensal} type={'money'} /> </TextCash></TextTitle>
+                  <View style={{ width: '90%', padding: 10, paddingTop: 0 }}>
 
-                ) : (
-                  <TextTitle style={styles.font}><TextCashRed>- <TextMask value={data.saldoMensal} type={'money'} /> </TextCashRed></TextTitle>
-                )}
-              </Wellcome>
-              <CardReceitaDespesa>
-                
-                <View style={{width: '90%', padding: 10, paddingTop: 0 }}>
+                    <Text style={{ color: '#000' }}>Categoria mais lucrativa</Text>
 
-                  <Text style={{ color: '#000' }}>Categoria mais lucrativa</Text>
+                    <FlexRow>
+                      <Text style={{ color: '#969696' }}>{data.categoriaMaisLucrativa.ctg_nome}</Text>
+                      <Text style={styles.font}><TextCash style={{ fontSize: 14 }}><TextMask value={data.categoriaMaisLucrativa.ctg_total} type={'money'} /></TextCash></Text>
+                    </FlexRow>
 
-                  <FlexRow>
-                    <Text style={{ color: '#969696' }}>{data.categoriaMaisLucrativa.ctg_nome}</Text>
-                    <Text style={styles.font}><TextCash style={{ fontSize: 14 }}><TextMask value={data.categoriaMaisLucrativa.ctg_total} type={'money'} /></TextCash></Text>
-                  </FlexRow>
+                    <Text style={{ color: '#000' }}>Maior Receita</Text>
 
-                  <Text style={{ color: '#000' }}>Maior Receita</Text>
+                    <FlexRow>
+                      <Text style={{ color: '#969696' }}>{data.maiorReceita.receita_descricao}</Text>
+                      <Text style={styles.font}><TextCash style={{ fontSize: 14 }}><TextMask value={data.maiorReceita.receita_valor} type={'money'} /></TextCash></Text>
+                    </FlexRow>
+                  </View>
 
-                  <FlexRow>
-                    <Text style={{ color: '#969696' }}>{data.maiorReceita.receita_descricao}</Text>
-                    <Text style={styles.font}><TextCash style={{ fontSize: 14 }}><TextMask value={data.maiorReceita.receita_valor} type={'money'} /></TextCash></Text>
-                  </FlexRow>
-                </View>
-                
-              </CardReceitaDespesa>
-              <CardReceitaDespesa>
-                <View style={{ width: '90%', padding: 10 }}>
-                <Text style={{ color: '#000', fontFamily: 'OpenSans_400Regular' }}>Categoria mais prejuízo</Text>
-                  <FlexRow>
-                    <Text style={{ color: '#969696', fontFamily: 'OpenSans_400Regular' }}>{data.maiorDespesa.despesa_descricao}</Text>
-                    <Text style={styles.font}><TextCashRed style={{ fontSize: 14 }}>- <TextMask value={data.maiorDespesa.despesa_valor} type={'money'} /></TextCashRed></Text>
-                  </FlexRow>
-                  <Text style={{ color: '#000', fontFamily: 'OpenSans_400Regular' }}>Maior Despesa</Text>
-                  <FlexRow>
-                    <Text style={{ color: '#969696', fontFamily: 'OpenSans_400Regular' }}>{data.maiorDespesa.despesa_descricao}</Text>
-                    <Text style={styles.font}><TextCashRed style={{ fontSize: 14 }}>- <TextMask value={data.maiorDespesa.despesa_valor} type={'money'} /></TextCashRed></Text>
-                  </FlexRow>
-                </View>
-              </CardReceitaDespesa>
-            </>
-          ) : (
-            <TextTitleName>Adicione receitas e despesas</TextTitleName>
-          )}
-        </View>
+                </CardReceitaDespesa>
+                <CardReceitaDespesa>
+                  <View style={{ width: '90%', padding: 10 }}>
+                    <Text style={{ color: '#000', fontFamily: 'OpenSans_400Regular' }}>Categoria mais prejuízo</Text>
+                    <FlexRow>
+                      <Text style={{ color: '#969696', fontFamily: 'OpenSans_400Regular' }}>{data.maiorDespesa.despesa_descricao}</Text>
+                      <Text style={styles.font}><TextCashRed style={{ fontSize: 14 }}>- <TextMask value={data.maiorDespesa.despesa_valor} type={'money'} /></TextCashRed></Text>
+                    </FlexRow>
+                    <Text style={{ color: '#000', fontFamily: 'OpenSans_400Regular' }}>Maior Despesa</Text>
+                    <FlexRow>
+                      <Text style={{ color: '#969696', fontFamily: 'OpenSans_400Regular' }}>{data.maiorDespesa.despesa_descricao}</Text>
+                      <Text style={styles.font}><TextCashRed style={{ fontSize: 14 }}>- <TextMask value={data.maiorDespesa.despesa_valor} type={'money'} /></TextCashRed></Text>
+                    </FlexRow>
+                  </View>
+                </CardReceitaDespesa>
+              </>
+            ) : (
+              <TextTitleName>Adicione receitas e despesas</TextTitleName>
+            )}
+          </View>
 
-      ))}
-    </Container>
+        ))}
+      </Container>
+    </ScrollView>
   );
 }
 
@@ -137,5 +142,5 @@ const styles = StyleSheet.create({
   font: {
     fontFamily: 'OpenSans_400Regular'
   },
-  
+
 });

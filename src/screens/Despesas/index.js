@@ -52,6 +52,7 @@ export default function Despesas({ navigation, itens, addItem }) {
   const [categorias, setCategorias] = useState([]);
   const [selectedCategoria, setSelectedCategoria] = useState();
   const [money, setMoney] = useState(0);
+  const [nameSearched, setNameSearched] = useState('');
   const [showDate, setShowDate] = useState(false);
   const [dateValue, setDateValue] = useState();
   const [edit, setEdit] = useState();
@@ -64,6 +65,8 @@ export default function Despesas({ navigation, itens, addItem }) {
     OpenSans_400Regular
   });
 
+  
+  
   const onChangeDate = (event, selectedDate) => {
     const currentDate = selectedDate || date;
     setShowDate(Platform.OS === 'ios');
@@ -72,7 +75,7 @@ export default function Despesas({ navigation, itens, addItem }) {
     setDate(currentDate);
     console.log(dateValue);
   };
-
+  
   async function get() {
     try {
       const res = await api.get('/despesas');
@@ -82,6 +85,10 @@ export default function Despesas({ navigation, itens, addItem }) {
       console.log(err.response.data);
     }
   }
+  
+  const despesasFiltradas = data.filter(despesa => {
+    return despesa.despesa_descricao.toLowerCase().includes(nameSearched.toLowerCase());
+  });
 
   useFocusEffect(
     React.useCallback(() => {
@@ -184,7 +191,8 @@ export default function Despesas({ navigation, itens, addItem }) {
       data.despesa_valor = moneyUnmask;
       data.despesa_data = date;
       setMoney(0);
-      setDate();
+      setDate(new Date());
+      setDateValue();      
       Toast.show({
         text1: 'Despesa Criada!',
         position: 'bottom'
@@ -201,194 +209,84 @@ export default function Despesas({ navigation, itens, addItem }) {
 
   return (
     <>
-        <>
-          <Head style={{
-            shadowColor: "#000",
-            shadowOffset: {
-              width: 0,
-              height: 2,
-            },
-            shadowOpacity: 0.23,
-            shadowRadius: 2.62,
+      <>
+        <Head style={{
+          shadowColor: "#000",
+          shadowOffset: {
+            width: 0,
+            height: 2,
+          },
+          shadowOpacity: 0.23,
+          shadowRadius: 2.62,
 
-            elevation: 4,
-          }}>
-            <TextHead>Despesa Total</TextHead>
-            <FlexRow>
-              <TouchableHighlight style={{ borderRadius: 50 }} activeOpacity={0.5} underlayColor="#dddd" onPress={() => { setModalVisible(true); setEdit(false); setObjectEdit(null); setDateValue() }}>
-                <Text><Icon name="add" size={30} color="rgba(4, 119, 196, 1)" /></Text>
-              </TouchableHighlight>
-              <TextCash> <TextMask value={despesaTotal} type={'money'} /> </TextCash>
-              <TouchableHighlight style={{ borderRadius: 50 }} activeOpacity={0.5} underlayColor="#dddd" onPress={() => setSearch(true)}>
-                <Text><Icon name="search" size={30} color="rgba(4, 119, 196, 1)" /></Text>
-              </TouchableHighlight>
-            </FlexRow>
+          elevation: 4,
+        }}>
+          <TextHead>Despesa Total</TextHead>
+          <FlexRow>
+            <TouchableHighlight style={{ borderRadius: 50 }} activeOpacity={0.5} underlayColor="#dddd" onPress={() => { setModalVisible(true); setEdit(false); setObjectEdit(null); setDateValue(); setMoney(0) }}>
+              <Text><Icon name="add" size={30} color="rgba(4, 119, 196, 1)" /></Text>
+            </TouchableHighlight>
+            <TextCash> <TextMask value={despesaTotal} type={'money'} /> </TextCash>
+            <TouchableHighlight style={{ borderRadius: 50 }} activeOpacity={0.5} underlayColor="#dddd" onPress={() => setSearch(true)}>
+              <Text><Icon name="search" size={30} color="rgba(4, 119, 196, 1)" /></Text>
+            </TouchableHighlight>
+          </FlexRow>
 
-          </Head>
+        </Head>
 
-          <ScrollView keyboardShouldPersistTaps='handled' contentContainerStyle={{ flexGrow: 1 }}>
+        <ScrollView keyboardShouldPersistTaps='handled' contentContainerStyle={{ flexGrow: 1 }}>
 
-            <Container>
-              {loading ? (
-                <>
+          <Container>
+            {loading ? (
+              <>
                 <CardItem style={{ marginBottom: 6 }}>
                   <LoadingSkeleton />
-              </CardItem>
-              <CardItem style={{ marginBottom: 6 }}>
-              <LoadingSkeleton />
-          </CardItem >
-          <CardItem style={{ marginBottom: 6 }}>
-          <LoadingSkeleton />
-      </CardItem>
-      </>
+                </CardItem>
+                <CardItem style={{ marginBottom: 6 }}>
+                  <LoadingSkeleton />
+                </CardItem >
+                <CardItem style={{ marginBottom: 6 }}>
+                  <LoadingSkeleton />
+                </CardItem>
+              </>
+            ) : (
+              data ? (
+                data.map((r) => (
+                  <TouchableHighlight style={{ paddingBottom: 6 }} onPress={() => getEdit(r.despesa_id)} activeOpacity={0.5} underlayColor="#dddd" key={r.despesa_id}>
+                    <CardItem>
+                      <View>
+                        <TextCard>{r.despesa_descricao}</TextCard>
+                        <TextCategory>{r.categoria.ctg_nome}</TextCategory>
+                        <TextCategory>{r.despesa_data ? moment(r.despesa_data).format('DD/MM') : moment(r.created_at
+                        ).format('DD/MM')}</TextCategory>
+                      </View>
+                      <TextCash>
+                        <TextMask
+                          value={r.despesa_valor}
+                          type={'money'}
+                        />
+                      </TextCash>
+                    </CardItem>
+                  </TouchableHighlight>
+                ))
+
               ) : (
-                data ? (
-                  data.map((r) => (
-                    <TouchableHighlight style={{ paddingBottom: 6 }} onPress={() => getEdit(r.despesa_id)} activeOpacity={0.5} underlayColor="#dddd" key={r.despesa_id}>
-                      <CardItem>
-                        <View>
-                          <TextCard>{r.despesa_descricao}</TextCard>
-                          <TextCategory>{r.categoria.ctg_nome}</TextCategory>
-                          <TextCategory>{r.despesa_data ? moment(r.despesa_data).format('DD/MM') : moment(r.created_at
-                          ).format('DD/MM')}</TextCategory>
-                        </View>
-                        <TextCash>
-                          <TextMask
-                            value={r.despesa_valor}
-                            type={'money'}
-                          />
-                        </TextCash>
-                      </CardItem>
-                    </TouchableHighlight>
-                  ))
-  
-                ) : (
-                  <Text>Não há despesas :(</Text>
-                )
-              )}
-              <ModalIten
-                animationType="slide"
-                transparent={true}
-                visible={modalVisible}
-                onRequestClose={() => {
-                  setObjectEdit(null);
-                  setModalVisible(false);
-                }}
-              >
-                <ScrollView keyboardShouldPersistTaps='handled' contentContainerStyle={{ flexGrow: 1 }}>
-                  <Forms>
-                    <Icon
-                      onPress={() => setModalVisible(false)}
-                      name="cancel"
-                      size={35}
-                      style={{
-                        position: "relative",
-                        top: -15,
-                        left: "90%",
-                        zIndex: 10,
-                      }}
-                      color="rgb(4, 119, 196)"
-                    />
-                    <TextTitleName>{edit ? "Editar " : "Adicionar "}Despesa</TextTitleName>
-                    <Select>
-                      <Texto>Categoria</Texto>
-                      <Picker
-
-                        style={{ height: 30, width: '100%', marginTop: 10, marginLeft: 0, fontSize: 24, }}
-                        selectedValue={selectedCategoria}
-                        onValueChange={(itemValue, itemIndex) =>
-                          setSelectedCategoria(itemValue)
-                        }>
-
-                        {categorias.map((ctg) => (
-                          <Picker.Item key={ctg.ctg_id} label={ctg.ctg_nome} value={ctg.ctg_id} />
-                        ))}
-
-                      </Picker>
-                    </Select>
-
-                    <Controller
-                      control={control}
-                      render={({ onChange, onBlur, value }) => (
-                        <>
-                          <Texto>Descrição da Despesa</Texto>
-                          <TextInputStyled
-                            onBlur={onBlur}
-                            placeholder=""
-                            onChangeText={(value) => onChange(value)}
-                            value={value}
-                            autoFocus={true}
-                            autoCapitalize="characters"
-
-                          />
-                        </>
-                      )}
-                      name="despesa_descricao"
-                      rules={{ required: true }}
-                      defaultValue={objectEdit ? objectEdit.despesa_descricao : ""}
-                    />
-                    <Texto>Valor da Despesa</Texto>
-                    <Select>
-                      <TextInputMask
-                        style={{ fontSize: 25 }}
-                        type={'money'}
-                        value={money}
-                        onChangeText={text => setMoney(text)}
-                        ref={moneyRef}
-                      />
-                    </Select>
-                    {dateValue && <TextTitleName style={{ textAlign: 'center', marginBottom: 10 }}>{edit && !date ? moment(objectEdit.despesa_data).format('DD/MM/YYYY') : dateValue}</TextTitleName>}
-                    <Button
-                      onPress={() => setShowDate(true)}
-                      title="selecione a data da despesa"
-                    />
-                    {showDate && (
-                      <DateTimePicker
-
-                        testID="dateTimePicker"
-                        value={date}
-                        mode="date"
-                        is24Hour={true}
-                        display="default"
-                        onChange={onChangeDate}
-                      />
-
-                    )}
-                    <View style={{ marginTop: 40 }} />
-                    {edit ? (
-                      <>
-                        <Button
-                          onPress={handleSubmit(patch)}
-                          title="EDITAR"
-                        />
-                        <View style={{ margin: 10 }}></View>
-                        <Button
-                          onPress={() => deletar(objectEdit.despesa_id)}
-                          title="deletar"
-                          color="red"
-                        />
-                      </>
-                    ) : (
-                      <Button
-                        onPress={handleSubmit(post)}
-                        title="confirmar"
-                        color="#0477C4"
-                      />
-
-                    )}
-                  </Forms>
-                </ScrollView>
-              </ModalIten>
-              <ModalIten
-                animationType="slide"
-                transparent={true}
-                visible={search}
-                onRequestClose={() => {
-                  setSearch(false);
-                }}>
+                <Text>Não há despesas :(</Text>
+              )
+            )}
+            <ModalIten
+              animationType="slide"
+              transparent={true}
+              visible={modalVisible}
+              onRequestClose={() => {
+                setObjectEdit(null);
+                setModalVisible(false);
+              }}
+            >
+              <ScrollView keyboardShouldPersistTaps='handled' contentContainerStyle={{ flexGrow: 1 }}>
                 <Forms>
                   <Icon
-                    onPress={() => setSearch(false)}
+                    onPress={() => setModalVisible(false)}
                     name="cancel"
                     size={35}
                     style={{
@@ -399,13 +297,145 @@ export default function Despesas({ navigation, itens, addItem }) {
                     }}
                     color="rgb(4, 119, 196)"
                   />
-                  <TextInputStyled placeholder="Pesquisar Despesa" onChangeText={(value) => onChange(value)} autoFocus={true} autoCapitalize="characters" />
+                  <TextTitleName>{edit ? "Editar " : "Adicionar "}Despesa</TextTitleName>
+                  <Select>
+                    <Texto>Categoria</Texto>
+                    <Picker
+
+                      style={{ height: 30, width: '100%', marginTop: 10, marginLeft: 0, fontSize: 24, }}
+                      selectedValue={selectedCategoria}
+                      onValueChange={(itemValue, itemIndex) =>
+                        setSelectedCategoria(itemValue)
+                      }>
+
+                      {categorias.map((ctg) => (
+                        <Picker.Item key={ctg.ctg_id} label={ctg.ctg_nome} value={ctg.ctg_id} />
+                      ))}
+
+                    </Picker>
+                  </Select>
+
+                  <Controller
+                    control={control}
+                    render={({ onChange, onBlur, value }) => (
+                      <>
+                        <Texto>Descrição da Despesa</Texto>
+                        <TextInputStyled
+                          onBlur={onBlur}
+                          placeholder=""
+                          onChangeText={(value) => onChange(value)}
+                          value={value}
+                          autoFocus={true}
+                          autoCapitalize="characters"
+
+                        />
+                      </>
+                    )}
+                    name="despesa_descricao"
+                    rules={{ required: true }}
+                    defaultValue={objectEdit ? objectEdit.despesa_descricao : ""}
+                  />
+                  <Texto>Valor da Despesa</Texto>
+                  <Select>
+                    <TextInputMask
+                      style={{ fontSize: 25 }}
+                      type={'money'}
+                      value={money}
+                      onChangeText={text => setMoney(text)}
+                      ref={moneyRef}
+                    />
+                  </Select>
+                  {dateValue && <TextTitleName style={{ textAlign: 'center', marginBottom: 10 }}>{edit && !date ? moment(objectEdit.despesa_data).format('DD/MM/YYYY') : dateValue}</TextTitleName>}
+                  <Button
+                    onPress={() => setShowDate(true)}
+                    title="selecione a data da despesa"
+                  />
+                  {showDate && (
+                    <DateTimePicker
+
+                      testID="dateTimePicker"
+                      value={date}
+                      mode="date"
+                      is24Hour={true}
+                      display="default"
+                      onChange={onChangeDate}
+                    />
+
+                  )}
+                  <View style={{ marginTop: 40 }} />
+                  {edit ? (
+                    <>
+                      <Button
+                        onPress={handleSubmit(patch)}
+                        title="EDITAR"
+                      />
+                      <View style={{ margin: 10 }}></View>
+                      <Button
+                        onPress={() => deletar(objectEdit.despesa_id)}
+                        title="deletar"
+                        color="red"
+                      />
+                    </>
+                  ) : (
+                    <Button
+                      onPress={handleSubmit(post)}
+                      title="confirmar"
+                      color="#0477C4"
+                    />
+
+                  )}
                 </Forms>
-              </ModalIten>
-            </Container>
-          </ScrollView>
-          <Toast ref={(ref) => Toast.setRef(ref)} />
-        </>
+              </ScrollView>
+            </ModalIten>
+
+            <ModalIten
+              animationType="slide"
+              transparent={true}
+              visible={search}
+              onRequestClose={() => {
+                setSearch(false);
+              }}>
+              <ScrollView keyboardShouldPersistTaps='handled' contentContainerStyle={{ flexGrow: 1 }}>
+              <Forms>
+                <Icon
+                  onPress={() => setSearch(false)}
+                  name="cancel"
+                  size={35}
+                  style={{
+                    position: "relative",
+                    top: -15,
+                    left: "90%",
+                    zIndex: 10,
+                  }}
+                  color="rgb(4, 119, 196)"
+                />
+                <TextInputStyled placeholder="Pesquisar Despesa" onChangeText={(value) => setNameSearched(value)} autoFocus={true} autoCapitalize="characters" />
+                {despesasFiltradas.map((r) => (
+                  <TouchableHighlight style={{ paddingBottom: 6 }} onPress={() => getEdit(r.despesa_id)} activeOpacity={0.5} underlayColor="#dddd" key={r.despesa_id}>
+                    <CardItem>
+                      <View>
+                        <TextCard>{r.despesa_descricao}</TextCard>
+                        <TextCategory>{r.categoria.ctg_nome}</TextCategory>
+                        <TextCategory>{r.despesa_data ? moment(r.despesa_data).format('DD/MM') : moment(r.created_at
+                        ).format('DD/MM')}</TextCategory>
+                      </View>
+                      <TextCash>
+                        <TextMask
+                          value={r.despesa_valor}
+                          type={'money'}
+                        />
+                      </TextCash>
+                    </CardItem>
+                  </TouchableHighlight>
+                ))}
+              </Forms>
+              </ScrollView>
+            </ModalIten>
+
+          </Container>
+        </ScrollView>
+        <Toast ref={(ref) => Toast.setRef(ref)} />
+      </>
 
     </>
   );

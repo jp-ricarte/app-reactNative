@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Text, View, TextInput, Button, Alert, Image, ActivityIndicator, StyleSheet } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
+import { useFocusEffect } from '@react-navigation/native';
 import IconCommunity from "react-native-vector-icons/MaterialCommunityIcons";
 import IconFontAwesome from "react-native-vector-icons/FontAwesome";
 import { useForm, Controller } from "react-hook-form";
@@ -58,10 +59,13 @@ export default function Login({ routes, navigation }) {
       setLoadingStorage(false);
     }
   }
-  
-  useEffect(() => {
-    getUser();
-  }, []);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      getUser();
+    }, [])
+);
+
 
   async function loginauto(email, senha) {
     try {

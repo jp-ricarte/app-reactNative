@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Text, View, TextInput, Button, Alert, Image } from "react-native";
 import { useForm, Controller } from "react-hook-form";
 import { Container } from "../../../global";
@@ -13,12 +13,17 @@ export default function Configurações({ navigation }) {
             await AsyncStorage.removeItem('email');
             await AsyncStorage.removeItem('senha');
             await AsyncStorage.removeItem('nome');
-            navigation.navigate('Login')
+            navigation.navigate('Login');
         }
-        catch(exception) { 
+        catch(err) { 
+          console.log(err);
             
         }
       }
+
+      useEffect(() => {
+
+    }, []);
 
   return (
       <UL>
