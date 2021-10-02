@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useFocusEffect } from '@react-navigation/native';
 import moment from 'moment';
 import Toast from 'react-native-toast-message';
@@ -58,6 +58,7 @@ export default function Despesas({ navigation, itens, addItem }) {
   const [edit, setEdit] = useState();
   const [objectEdit, setObjectEdit] = useState();
   const [search, setSearch] = useState(false);
+  const [filtrada, setFiltrada] = useState([]);
   const moneyRef = useRef(null);
 
   let [fontsLoaded] = useFonts({
@@ -85,24 +86,27 @@ export default function Despesas({ navigation, itens, addItem }) {
       console.log(err.response.data);
     }
   }
-  
-  const despesasFiltradas = data.filter(despesa => {
-    return despesa.despesa_descricao.toLowerCase().includes(nameSearched.toLowerCase());
-  });
 
+  
   useFocusEffect(
     React.useCallback(() => {
+      const despesasFiltradas = data.filter(despesa => {
+          return despesa.despesa_descricao.toLowerCase().includes(nameSearched.toLowerCase());
+      });
+      setFiltrada(despesasFiltradas);
+
       get();
       getCategorias();
       getDashboard();
+      console.log('a');
 
-    }, [])
+    }, [nameSearched])
   );
 
   async function getDashboard() {
     try {
       const res = await api.get('/dashboard');
-      setDespesaTotal(res.data[0].despesa);
+      setDespesaTotal(res.data[0].despesaMensal);
     } catch (err) {
       console.log(err.response.data);
     }
@@ -248,6 +252,9 @@ export default function Despesas({ navigation, itens, addItem }) {
                 <CardItem style={{ marginBottom: 6 }}>
                   <LoadingSkeleton />
                 </CardItem>
+                <CardItem style={{ marginBottom: 6 }}>
+                  <LoadingSkeleton />
+                </CardItem>
               </>
             ) : (
               data ? (
@@ -271,7 +278,7 @@ export default function Despesas({ navigation, itens, addItem }) {
                 ))
 
               ) : (
-                <Text>Não há despesas :(</Text>
+                <Text>Não há despesas :)</Text>
               )
             )}
             <ModalIten
@@ -410,7 +417,7 @@ export default function Despesas({ navigation, itens, addItem }) {
                   color="rgb(4, 119, 196)"
                 />
                 <TextInputStyled placeholder="Pesquisar Despesa" onChangeText={(value) => setNameSearched(value)} autoFocus={true} autoCapitalize="characters" />
-                {despesasFiltradas.map((r) => (
+                {filtrada.map((r) => (
                   <TouchableHighlight style={{ paddingBottom: 6 }} onPress={() => getEdit(r.despesa_id)} activeOpacity={0.5} underlayColor="#dddd" key={r.despesa_id}>
                     <CardItem>
                       <View>

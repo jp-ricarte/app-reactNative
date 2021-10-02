@@ -51,8 +51,9 @@ export default function Login({ routes, navigation }) {
     const email = await AsyncStorage.getItem('email');
     const senha = await AsyncStorage.getItem('senha');
     const nome = await AsyncStorage.getItem('nome');
-    setNome(nome)
-    console.log('[localstorage]', email, senha, nome);
+    const id = await AsyncStorage.getItem('id');
+    setNome(nome);
+    console.log('[localstorage]', email, senha, nome, id);
     if (email && senha) {
       loginauto(email, senha);
     } else {
@@ -86,10 +87,13 @@ export default function Login({ routes, navigation }) {
     try {
       await api.post('/login', data).then((response) => {
         if (response.data.loggedIn) {
-          console.log('userl', data);
+          let idString = response.data.data.user_id.toString();
+
           navigation.navigate('HomeTabs');
-          AsyncStorage.setItem('email', data.user_email)
-          AsyncStorage.setItem('senha', data.user_senha)
+          
+          AsyncStorage.setItem('email', data.user_email);
+          AsyncStorage.setItem('senha', data.user_senha);
+          AsyncStorage.setItem('id', idString);
           AsyncStorage.setItem('nome', response.data.data.user_nome);
         } else {
           alert('E-mail ou senha inválidos!');
