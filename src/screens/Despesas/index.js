@@ -59,6 +59,7 @@ export default function Despesas({ navigation, itens, addItem }) {
   const [objectEdit, setObjectEdit] = useState();
   const [search, setSearch] = useState(false);
   const [filtrada, setFiltrada] = useState([]);
+  const [month, setMonth] = useState(moment().format('MMMM'));
   const moneyRef = useRef(null);
 
   let [fontsLoaded] = useFonts({
@@ -66,8 +67,8 @@ export default function Despesas({ navigation, itens, addItem }) {
     OpenSans_400Regular
   });
 
-  
-  
+
+
   const onChangeDate = (event, selectedDate) => {
     const currentDate = selectedDate || date;
     setShowDate(Platform.OS === 'ios');
@@ -76,10 +77,11 @@ export default function Despesas({ navigation, itens, addItem }) {
     setDate(currentDate);
     console.log(dateValue);
   };
-  
-  async function get() {
+
+  async function get(month) {
+    setLoading(true);
     try {
-      const res = await api.get('/despesas');
+      const res = await api.get(`/despesas/${month}`);
       setData(res.data.despesas);
       setLoading(false);
     } catch (err) {
@@ -87,21 +89,23 @@ export default function Despesas({ navigation, itens, addItem }) {
     }
   }
 
-  
   useFocusEffect(
     React.useCallback(() => {
       const despesasFiltradas = data.filter(despesa => {
-          return despesa.despesa_descricao.toLowerCase().includes(nameSearched.toLowerCase());
+        return despesa.despesa_descricao.toLowerCase().includes(nameSearched.toLowerCase());
       });
       setFiltrada(despesasFiltradas);
 
-      get();
+      get(month);
       getCategorias();
       getDashboard();
-      console.log('a');
 
     }, [nameSearched])
   );
+
+  useEffect(() => {
+    get(month);
+  }, [month])
 
   async function getDashboard() {
     try {
@@ -156,7 +160,7 @@ export default function Despesas({ navigation, itens, addItem }) {
       setModalVisible(false);
       setEdit(false);
       setObjectEdit(false);
-      get();
+      get(month);
       getCategorias();
       getDashboard();
       Toast.show({
@@ -196,14 +200,14 @@ export default function Despesas({ navigation, itens, addItem }) {
       data.despesa_data = date;
       setMoney(0);
       setDate(new Date());
-      setDateValue();      
+      setDateValue();
       Toast.show({
         text1: 'Despesa Criada!',
         position: 'bottom'
       });
       await api.post('/despesas', data);
 
-      get();
+      get(month);
       getDashboard();
       setModalVisible(false);
     } catch (error) {
@@ -225,12 +229,32 @@ export default function Despesas({ navigation, itens, addItem }) {
 
           elevation: 4,
         }}>
-          <TextHead>Despesa Total</TextHead>
+          <TextHead><TextCash> <TextMask value={despesaTotal} type={'money'} /> </TextCash></TextHead>
           <FlexRow>
             <TouchableHighlight style={{ borderRadius: 50 }} activeOpacity={0.5} underlayColor="#dddd" onPress={() => { setModalVisible(true); setEdit(false); setObjectEdit(null); setDateValue(); setMoney(0) }}>
               <Text><Icon name="add" size={30} color="rgba(4, 119, 196, 1)" /></Text>
             </TouchableHighlight>
-            <TextCash> <TextMask value={despesaTotal} type={'money'} /> </TextCash>
+            <Picker
+              style={{ width: 140, }}
+              selectedValue={month}
+              onValueChange={(itemValue, itemIndex) =>
+                setMonth(itemValue)
+              }>
+
+              <Picker.Item key={1} label={'janeiro'} value={'janeiro'} />
+              <Picker.Item key={2} label={'fevereiro'} value={'fevereiro'} />
+              <Picker.Item key={3} label={'março'} value={'março'} />
+              <Picker.Item key={4} label={'abril'} value={'abril'} />
+              <Picker.Item key={5} label={'maio'} value={'maio'} />
+              <Picker.Item key={6} label={'junho'} value={'junho'} />
+              <Picker.Item key={7} label={'julho'} value={'julho'} />
+              <Picker.Item key={8} label={'agosto'} value={'agosto'} />
+              <Picker.Item key={9} label={'setembro'} value={'setembro'} />
+              <Picker.Item key={10} label={'outubro'} value={'outubro'} />
+              <Picker.Item key={11} label={'novembro'} value={'novembro'} />
+              <Picker.Item key={12} label={'dezembro'} value={'dezembro'} />
+
+            </Picker>
             <TouchableHighlight style={{ borderRadius: 50 }} activeOpacity={0.5} underlayColor="#dddd" onPress={() => setSearch(true)}>
               <Text><Icon name="search" size={30} color="rgba(4, 119, 196, 1)" /></Text>
             </TouchableHighlight>
@@ -278,7 +302,7 @@ export default function Despesas({ navigation, itens, addItem }) {
                 ))
 
               ) : (
-                <Text>Não há despesas :)</Text>
+                <Text>Não há despesas :(</Text>
               )
             )}
             <ModalIten
@@ -403,39 +427,39 @@ export default function Despesas({ navigation, itens, addItem }) {
                 setSearch(false);
               }}>
               <ScrollView keyboardShouldPersistTaps='handled' contentContainerStyle={{ flexGrow: 1 }}>
-              <Forms>
-                <Icon
-                  onPress={() => setSearch(false)}
-                  name="cancel"
-                  size={35}
-                  style={{
-                    position: "relative",
-                    top: -15,
-                    left: "90%",
-                    zIndex: 10,
-                  }}
-                  color="rgb(4, 119, 196)"
-                />
-                <TextInputStyled placeholder="Pesquisar Despesa" onChangeText={(value) => setNameSearched(value)} autoFocus={true} autoCapitalize="characters" />
-                {filtrada.map((r) => (
-                  <TouchableHighlight style={{ paddingBottom: 6 }} onPress={() => getEdit(r.despesa_id)} activeOpacity={0.5} underlayColor="#dddd" key={r.despesa_id}>
-                    <CardItem>
-                      <View>
-                        <TextCard>{r.despesa_descricao}</TextCard>
-                        <TextCategory>{r.categoria.ctg_nome}</TextCategory>
-                        <TextCategory>{r.despesa_data ? moment(r.despesa_data).format('DD/MM') : moment(r.created_at
-                        ).format('DD/MM')}</TextCategory>
-                      </View>
-                      <TextCash>
-                        <TextMask
-                          value={r.despesa_valor}
-                          type={'money'}
-                        />
-                      </TextCash>
-                    </CardItem>
-                  </TouchableHighlight>
-                ))}
-              </Forms>
+                <Forms>
+                  <Icon
+                    onPress={() => setSearch(false)}
+                    name="cancel"
+                    size={35}
+                    style={{
+                      position: "relative",
+                      top: -15,
+                      left: "90%",
+                      zIndex: 10,
+                    }}
+                    color="rgb(4, 119, 196)"
+                  />
+                  <TextInputStyled placeholder="Pesquisar Despesa" onChangeText={(value) => setNameSearched(value)} autoFocus={true} autoCapitalize="characters" />
+                  {filtrada.map((r) => (
+                    <TouchableHighlight style={{ paddingBottom: 6 }} onPress={() => getEdit(r.despesa_id)} activeOpacity={0.5} underlayColor="#dddd" key={r.despesa_id}>
+                      <CardItem>
+                        <View>
+                          <TextCard>{r.despesa_descricao}</TextCard>
+                          <TextCategory>{r.categoria.ctg_nome}</TextCategory>
+                          <TextCategory>{r.despesa_data ? moment(r.despesa_data).format('DD/MM') : moment(r.created_at
+                          ).format('DD/MM')}</TextCategory>
+                        </View>
+                        <TextCash>
+                          <TextMask
+                            value={r.despesa_valor}
+                            type={'money'}
+                          />
+                        </TextCash>
+                      </CardItem>
+                    </TouchableHighlight>
+                  ))}
+                </Forms>
               </ScrollView>
             </ModalIten>
 

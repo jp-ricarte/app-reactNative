@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useFocusEffect } from '@react-navigation/native';
 import moment from 'moment';
 import Toast from 'react-native-toast-message';
@@ -59,6 +59,7 @@ export default function Receitas({ navigation, itens, addItem }) {
   const [objectEdit, setObjectEdit] = useState();
   const [search, setSearch] = useState(false);
   const [filtrada, setFiltrada] = useState([]);
+  const [month, setMonth] = useState(moment().format('MMMM'));
   const moneyRef = useRef(null);
 
   let [fontsLoaded] = useFonts({
@@ -66,8 +67,8 @@ export default function Receitas({ navigation, itens, addItem }) {
     OpenSans_400Regular
   });
 
-  
-  
+
+
   const onChangeDate = (event, selectedDate) => {
     const currentDate = selectedDate || date;
     setShowDate(Platform.OS === 'ios');
@@ -76,30 +77,35 @@ export default function Receitas({ navigation, itens, addItem }) {
     setDate(currentDate);
     console.log(dateValue);
   };
-  
-  async function get() {
+
+  async function get(month) {
+    setLoading(true);
     try {
-      const res = await api.get('/receitas');
+      const res = await api.get(`/receitas/${month}`);
       setData(res.data.receitas);
       setLoading(false);
     } catch (err) {
       console.log(err.response.data);
     }
   }
-  
+
   useFocusEffect(
     React.useCallback(() => {
       const receitasFiltradas = data.filter(receita => {
-          return receita.receita_descricao.toLowerCase().includes(nameSearched.toLowerCase());
+        return receita.receita_descricao.toLowerCase().includes(nameSearched.toLowerCase());
       });
       setFiltrada(receitasFiltradas);
 
-      get();
+      get(month);
       getCategorias();
       getDashboard();
 
     }, [nameSearched])
   );
+
+  useEffect(() => {
+    get(month);
+  }, [month])
 
   async function getDashboard() {
     try {
@@ -154,7 +160,7 @@ export default function Receitas({ navigation, itens, addItem }) {
       setModalVisible(false);
       setEdit(false);
       setObjectEdit(false);
-      get();
+      get(month);
       getCategorias();
       getDashboard();
       Toast.show({
@@ -194,14 +200,14 @@ export default function Receitas({ navigation, itens, addItem }) {
       data.receita_data = date;
       setMoney(0);
       setDate(new Date());
-      setDateValue();      
+      setDateValue();
       Toast.show({
         text1: 'Receita Criada!',
         position: 'bottom'
       });
       await api.post('/receitas', data);
 
-      get();
+      get(month);
       getDashboard();
       setModalVisible(false);
     } catch (error) {
@@ -223,12 +229,32 @@ export default function Receitas({ navigation, itens, addItem }) {
 
           elevation: 4,
         }}>
-          <TextHead>Receita Total</TextHead>
+          <TextHead><TextCash> <TextMask value={receitaTotal} type={'money'} /> </TextCash></TextHead>
           <FlexRow>
             <TouchableHighlight style={{ borderRadius: 50 }} activeOpacity={0.5} underlayColor="#dddd" onPress={() => { setModalVisible(true); setEdit(false); setObjectEdit(null); setDateValue(); setMoney(0) }}>
               <Text><Icon name="add" size={30} color="rgba(4, 119, 196, 1)" /></Text>
             </TouchableHighlight>
-            <TextCash> <TextMask value={receitaTotal} type={'money'} /> </TextCash>
+            <Picker
+              style={{ width: 140, }}
+              selectedValue={month}
+              onValueChange={(itemValue, itemIndex) =>
+                setMonth(itemValue)
+              }>
+
+              <Picker.Item key={1} label={'janeiro'} value={'janeiro'} />
+              <Picker.Item key={2} label={'fevereiro'} value={'fevereiro'} />
+              <Picker.Item key={3} label={'março'} value={'março'} />
+              <Picker.Item key={4} label={'abril'} value={'abril'} />
+              <Picker.Item key={5} label={'maio'} value={'maio'} />
+              <Picker.Item key={6} label={'junho'} value={'junho'} />
+              <Picker.Item key={7} label={'julho'} value={'julho'} />
+              <Picker.Item key={8} label={'agosto'} value={'agosto'} />
+              <Picker.Item key={9} label={'setembro'} value={'setembro'} />
+              <Picker.Item key={10} label={'outubro'} value={'outubro'} />
+              <Picker.Item key={11} label={'novembro'} value={'novembro'} />
+              <Picker.Item key={12} label={'dezembro'} value={'dezembro'} />
+
+            </Picker>
             <TouchableHighlight style={{ borderRadius: 50 }} activeOpacity={0.5} underlayColor="#dddd" onPress={() => setSearch(true)}>
               <Text><Icon name="search" size={30} color="rgba(4, 119, 196, 1)" /></Text>
             </TouchableHighlight>
@@ -401,39 +427,39 @@ export default function Receitas({ navigation, itens, addItem }) {
                 setSearch(false);
               }}>
               <ScrollView keyboardShouldPersistTaps='handled' contentContainerStyle={{ flexGrow: 1 }}>
-              <Forms>
-                <Icon
-                  onPress={() => setSearch(false)}
-                  name="cancel"
-                  size={35}
-                  style={{
-                    position: "relative",
-                    top: -15,
-                    left: "90%",
-                    zIndex: 10,
-                  }}
-                  color="rgb(4, 119, 196)"
-                />
-                <TextInputStyled placeholder="Pesquisar Receita" onChangeText={(value) => setNameSearched(value)} autoFocus={true} autoCapitalize="characters" />
-                {filtrada.map((r) => (
-                  <TouchableHighlight style={{ paddingBottom: 6 }} onPress={() => getEdit(r.receita_id)} activeOpacity={0.5} underlayColor="#dddd" key={r.receita_id}>
-                    <CardItem>
-                      <View>
-                        <TextCard>{r.receita_descricao}</TextCard>
-                        <TextCategory>{r.categoria.ctg_nome}</TextCategory>
-                        <TextCategory>{r.receita_data ? moment(r.receita_data).format('DD/MM') : moment(r.created_at
-                        ).format('DD/MM')}</TextCategory>
-                      </View>
-                      <TextCash>
-                        <TextMask
-                          value={r.receita_valor}
-                          type={'money'}
-                        />
-                      </TextCash>
-                    </CardItem>
-                  </TouchableHighlight>
-                ))}
-              </Forms>
+                <Forms>
+                  <Icon
+                    onPress={() => setSearch(false)}
+                    name="cancel"
+                    size={35}
+                    style={{
+                      position: "relative",
+                      top: -15,
+                      left: "90%",
+                      zIndex: 10,
+                    }}
+                    color="rgb(4, 119, 196)"
+                  />
+                  <TextInputStyled placeholder="Pesquisar Receita" onChangeText={(value) => setNameSearched(value)} autoFocus={true} autoCapitalize="characters" />
+                  {filtrada.map((r) => (
+                    <TouchableHighlight style={{ paddingBottom: 6 }} onPress={() => getEdit(r.receita_id)} activeOpacity={0.5} underlayColor="#dddd" key={r.receita_id}>
+                      <CardItem>
+                        <View>
+                          <TextCard>{r.receita_descricao}</TextCard>
+                          <TextCategory>{r.categoria.ctg_nome}</TextCategory>
+                          <TextCategory>{r.receita_data ? moment(r.receita_data).format('DD/MM') : moment(r.created_at
+                          ).format('DD/MM')}</TextCategory>
+                        </View>
+                        <TextCash>
+                          <TextMask
+                            value={r.receita_valor}
+                            type={'money'}
+                          />
+                        </TextCash>
+                      </CardItem>
+                    </TouchableHighlight>
+                  ))}
+                </Forms>
               </ScrollView>
             </ModalIten>
 

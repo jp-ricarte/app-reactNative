@@ -162,12 +162,12 @@ export default function Login({ routes, navigation }) {
           </ButtonLogin>
         </ViewButton>
       )}
-      <Text>ou</Text>
+      {/* <Text>ou</Text>
         <ViewButtonGoogle style={styles.shadow}>
           <ButtonLogin title="Submit" onPress={googleLogin}>
             <TextLogin style={{color: '#fff'}}> <IconFontAwesome name="google" size={20} color="rgba(255, 255, 255, 1)" /> Entrar com o Google</TextLogin>
           </ButtonLogin>
-        </ViewButtonGoogle>
+        </ViewButtonGoogle> */}
     </Container>
 
     )}
