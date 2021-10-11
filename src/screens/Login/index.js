@@ -55,7 +55,7 @@ export default function Login({ routes, navigation }) {
     setNome(nome);
     console.log('[localstorage]', email, senha, nome, id);
     if (email && senha) {
-      loginauto(email, senha);
+      loginAuto(email, senha);
     } else {
       setLoadingStorage(false);
     }
@@ -68,12 +68,12 @@ export default function Login({ routes, navigation }) {
 );
 
 
-  async function loginauto(email, senha) {
+  async function loginAuto(email, senha) {
     try {
       if (email) {
         await api.post('/login', {
-          "user_email": email,
-          "user_senha": senha
+          "email": email,
+          "password": senha
         });
         navigation.navigate('HomeTabs');
       }
@@ -91,10 +91,10 @@ export default function Login({ routes, navigation }) {
 
           navigation.navigate('HomeTabs');
           
-          AsyncStorage.setItem('email', data.user_email);
-          AsyncStorage.setItem('senha', data.user_senha);
+          AsyncStorage.setItem('email', data.email);
+          AsyncStorage.setItem('senha', data.password);
           AsyncStorage.setItem('id', idString);
-          AsyncStorage.setItem('nome', response.data.data.user_nome);
+          AsyncStorage.setItem('nome', response.data.data.username);
         } else {
           alert('E-mail ou senha inválidos!');
         }
@@ -134,7 +134,7 @@ export default function Login({ routes, navigation }) {
             <TextInputStyled onBlur={onBlur} placeholder="E-mail" onChangeText={(value) => onChange(value)} value={value} />
           </Email>
         )}
-        name="user_email"
+        name="email"
         rules={{ required: true }}
         defaultValue=""
       />
@@ -148,7 +148,7 @@ export default function Login({ routes, navigation }) {
             <Icon onPress={hideHidePassword} name={hide ? "visibility-off" : "visibility"} size={24} color="rgba(0, 0, 0, 1)" />
           </Senha>
         )}
-        name="user_senha"
+        name="password"
         rules={{ required: true }}
         defaultValue=""
       />
