@@ -31,21 +31,21 @@ export default function Login({ routes, navigation }) {
   const [nome, setNome] = useState();
 
 
-  async function googleLogin() {
-    try {
-      const { type, user } = await Google.logInAsync({
-        iosClientId: `<YOUR_IOS_CLIENT_ID>`,
-        androidClientId: `356000393313-vp3df828bj11s3ej6qgf4qdm1dgvc7o8.apps.googleusercontent.com`,
-      });
+  // async function googleLogin() {
+  //   try {
+  //     const { type, user } = await Google.logInAsync({
+  //       iosClientId: `<YOUR_IOS_CLIENT_ID>`,
+  //       androidClientId: `356000393313-vp3df828bj11s3ej6qgf4qdm1dgvc7o8.apps.googleusercontent.com`,
+  //     });
 
-      if (type === "success") {
-        // Then you can use the Google REST API
-        console.log("LoginScreen.js 17 | success, navigating to profile", user);
-      }
-    } catch (error) {
-      console.log("LoginScreen.js 19 | error with login", error);
-    }
-  };
+  //     if (type === "success") {
+  //       // Then you can use the Google REST API
+  //       console.log("LoginScreen.js 17 | success, navigating to profile", user);
+  //     }
+  //   } catch (error) {
+  //     console.log("LoginScreen.js 19 | error with login", error);
+  //   }
+  // };
 
   async function getUser() {
     const email = await AsyncStorage.getItem('email');
@@ -84,10 +84,12 @@ export default function Login({ routes, navigation }) {
 
   async function login(data) {
     setLoading(true);
+    console.log("[dados enviadoa]", data);
     try {
       await api.post('/login', data).then((response) => {
-        if (response.data.loggedIn) {
-          let idString = response.data.data.user_id.toString();
+        console.log('aaaaaaaaaaaaaaa',response);
+        if (response.data) {
+          let idString = response.data.id.toString();
 
           navigation.navigate('HomeTabs');
           

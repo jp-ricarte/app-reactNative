@@ -15,6 +15,8 @@ import {
   StyleSheet
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import { useForm, Controller } from "react-hook-form";
 import {
   Texto,
@@ -22,18 +24,17 @@ import {
   TextCard,
   TextCash,
   TextCategory,
-  TextInputStyled,
   Forms,
   ModalIten,
   CardItem,
   ButtonAdd,
-  Select,
   Head,
   TextHead,
   FlexRow,
   ButtonHead,
 
 } from "./styles";
+import { InputCash, TextInputStyled, Select } from "../Receitas/styles";
 import { Picker } from '@react-native-picker/picker';
 import { TextInputMask, TextMask } from 'react-native-masked-text'
 import { useFonts, OpenSans_600SemiBold, OpenSans_400Regular } from '@expo-google-fonts/open-sans';
@@ -78,10 +79,11 @@ export default function Despesas({ navigation, itens, addItem }) {
     console.log(dateValue);
   };
 
-  async function get(month) {
+  async function get() {
+    const idUser = await AsyncStorage.getItem('id');
     setLoading(true);
     try {
-      const res = await api.get(`/despesas/${month}`);
+      const res = await api.get(`/despesas/${idUser}`);
       setData(res.data.despesas);
       setLoading(false);
     } catch (err) {
@@ -96,7 +98,7 @@ export default function Despesas({ navigation, itens, addItem }) {
       });
       setFiltrada(despesasFiltradas);
 
-      get(month);
+      get();
       getCategorias();
       getDashboard();
 
@@ -104,12 +106,13 @@ export default function Despesas({ navigation, itens, addItem }) {
   );
 
   useEffect(() => {
-    get(month);
-  }, [month])
+    get();
+  }, [])
 
   async function getDashboard() {
+    const idUser = await AsyncStorage.getItem('id');
     try {
-      const res = await api.get('/dashboard');
+      const res = await api.get(`/dashboard/${idUser}`);
       setDespesaTotal(res.data[0].despesaMensal);
     } catch (err) {
       console.log(err.response.data);
@@ -117,8 +120,9 @@ export default function Despesas({ navigation, itens, addItem }) {
   }
 
   async function getCategorias() {
+    const idUser = await AsyncStorage.getItem('id');
     try {
-      const cat = await api.get('/categorias');
+      const cat = await api.get(`/categorias/${idUser}`);
       const catDespesas = cat.data.categorias.filter(cat => {
         return !cat.ctg_tipo;
       });
@@ -188,7 +192,7 @@ export default function Despesas({ navigation, itens, addItem }) {
   }
 
   async function post(data) {
-    console.log('??', data);
+    const idUser = await AsyncStorage.getItem('id');
     try {
       if (categorias.length == 1 || selectedCategoria == undefined) {
         data.despesa_categoria = categorias[0].ctg_id;
@@ -205,7 +209,7 @@ export default function Despesas({ navigation, itens, addItem }) {
         text1: 'Despesa Criada!',
         position: 'bottom'
       });
-      await api.post('/despesas', data);
+      await api.post(`/despesas/${idUser}`, data);
 
       get(month);
       getDashboard();
@@ -287,9 +291,9 @@ export default function Despesas({ navigation, itens, addItem }) {
                     <CardItem>
                       <View>
                         <TextCard>{r.despesa_descricao}</TextCard>
-                        <TextCategory>{r.categoria.ctg_nome}</TextCategory>
-                        <TextCategory>{r.despesa_data ? moment(r.despesa_data).format('DD/MM') : moment(r.created_at
-                        ).format('DD/MM')}</TextCategory>
+                        <TextCategory>{r.ctg_nome}</TextCategory>
+                        <TextCategory>{r.despesa_data ? moment(r.despesa_data).format('DD/MM/YYYY') : moment(r.created_at
+                        ).format('DD/MM/YYYY')}</TextCategory>
                       </View>
                       <TextCash>
                         <TextMask
@@ -329,18 +333,18 @@ export default function Despesas({ navigation, itens, addItem }) {
                     color="rgb(4, 119, 196)"
                   />
                   <TextTitleName>{edit ? "Editar " : "Adicionar "}Despesa</TextTitleName>
+                  <Texto>Categoria</Texto>
                   <Select>
-                    <Texto>Categoria</Texto>
                     <Picker
 
-                      style={{ height: 30, width: '100%', marginTop: 10, marginLeft: 0, fontSize: 24, }}
+                      style={{ height: 30, width: '100%', marginLeft: 0, fontSize: 27, paddingBottom: 20 }}
                       selectedValue={selectedCategoria}
                       onValueChange={(itemValue, itemIndex) =>
                         setSelectedCategoria(itemValue)
                       }>
 
                       {categorias.map((ctg) => (
-                        <Picker.Item key={ctg.ctg_id} label={ctg.ctg_nome} value={ctg.ctg_id} />
+                        <Picker.Item key={ctg.ctg_id} style={{fontSize: 20}} label={ctg.ctg_nome} value={ctg.ctg_id} />
                       ))}
 
                     </Picker>
@@ -367,15 +371,15 @@ export default function Despesas({ navigation, itens, addItem }) {
                     defaultValue={objectEdit ? objectEdit.despesa_descricao : ""}
                   />
                   <Texto>Valor da Despesa</Texto>
-                  <Select>
+                  <InputCash>
                     <TextInputMask
-                      style={{ fontSize: 25 }}
+                      style={{ fontSize: 21 }}
                       type={'money'}
                       value={money}
                       onChangeText={text => setMoney(text)}
                       ref={moneyRef}
                     />
-                  </Select>
+                  </InputCash>
                   {dateValue && <TextTitleName style={{ textAlign: 'center', marginBottom: 10 }}>{edit && !date ? moment(objectEdit.despesa_data).format('DD/MM/YYYY') : dateValue}</TextTitleName>}
                   <Button
                     onPress={() => setShowDate(true)}
@@ -445,10 +449,11 @@ export default function Despesas({ navigation, itens, addItem }) {
                     <TouchableHighlight style={{ paddingBottom: 6 }} onPress={() => getEdit(r.despesa_id)} activeOpacity={0.5} underlayColor="#dddd" key={r.despesa_id}>
                       <CardItem>
                         <View>
+                          <TextHead>{r.despesa_mes}</TextHead>
                           <TextCard>{r.despesa_descricao}</TextCard>
-                          <TextCategory>{r.categoria.ctg_nome}</TextCategory>
-                          <TextCategory>{r.despesa_data ? moment(r.despesa_data).format('DD/MM') : moment(r.created_at
-                          ).format('DD/MM')}</TextCategory>
+                          <TextCategory>{r.ctg_nome}</TextCategory>
+                          <TextCategory>{r.despesa_data ? moment(r.despesa_data).format('DD/MM/YYYY') : moment(r.created_at
+                          ).format('DD/MM/YYYY')}</TextCategory>
                         </View>
                         <TextCash>
                           <TextMask

@@ -6,6 +6,7 @@ export const Container = styled.View`
   height: 100%;
   margin-top: 40%;
   margin-bottom: 5%;
+  background-color: #fff;
 `;
 
 export const Head = styled.View`
@@ -54,7 +55,7 @@ export const CardItem = styled.View`
   align-self: center;
   background-color: #fff;
   width: 95%;
-  margin-top: 6px;
+  margin-top: 10px;
   padding: 15px;
   border-radius: 5px;
 `;
@@ -63,6 +64,12 @@ export const TextCard = styled.Text`
   color: #000;
   font-size: 16px;
 `;
+
+export const TextMonth = styled.Text`
+  color: #000;
+  font-size: 20px;
+`;
+
 export const TextCash = styled.Text`
   color: #3dbd20;
   font-size: 18px;
@@ -81,27 +88,35 @@ export const Texto = styled.Text`
 `;
 
 export const TextInputStyled = styled.TextInput`
-  padding: 10px;
-  padding-left: 10px;
-  padding-bottom: 0px;
+  padding: 20px;
   margin-bottom: 10px;
+  border-radius: 10px;
   width: 100%;
   color: #000;
-  border-bottom-width: 1.5px;
-  border-bottom-color: #0477C4;
-  font-size: 20px;
+  font-size: 18px;
+  background-color: #f4f4f4;
   `;
   
   export const Select = styled.View`
   padding: 10px;
-  padding-left: 0px;
-  padding-bottom: 0px;
+  padding-bottom: 40px;
+  border-radius: 10px;
   margin-bottom: 10px;
+  font-size: 20px;
   width: 100%;
   color: #000;
-  border-bottom-width: 1.5px;
-  border-bottom-color: #0477C4;
+  background-color: #f4f4f4;
   `;
+
+export const InputCash = styled.View`
+padding: 20px;
+border-radius: 10px;
+margin-bottom: 10px;
+font-size: 20px;
+width: 100%;
+color: #000;
+background-color: #f4f4f4;
+`;
   
 export const Forms = styled.View`
   display: flex;

@@ -3,6 +3,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import moment from 'moment';
 import Toast from 'react-native-toast-message';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   Button,
   Alert,
@@ -31,8 +32,8 @@ import {
   Head,
   TextHead,
   FlexRow,
-  ButtonHead,
-
+  InputCash,
+  TextMonth
 } from "./styles";
 import { Picker } from '@react-native-picker/picker';
 import { TextInputMask, TextMask } from 'react-native-masked-text'
@@ -61,6 +62,7 @@ export default function Receitas({ navigation, itens, addItem }) {
   const [filtrada, setFiltrada] = useState([]);
   const [month, setMonth] = useState(moment().format('MMMM'));
   const moneyRef = useRef(null);
+  const [user, setUser] = useState('');
 
   let [fontsLoaded] = useFonts({
     OpenSans_600SemiBold,
@@ -78,10 +80,11 @@ export default function Receitas({ navigation, itens, addItem }) {
     console.log(dateValue);
   };
 
-  async function get(month) {
+  async function get() {
+    const idUser = await AsyncStorage.getItem('id');
     setLoading(true);
     try {
-      const res = await api.get(`/receitas/${month}`);
+      const res = await api.get(`/receitas/${idUser}`);
       setData(res.data.receitas);
       setLoading(false);
     } catch (err) {
@@ -96,7 +99,7 @@ export default function Receitas({ navigation, itens, addItem }) {
       });
       setFiltrada(receitasFiltradas);
 
-      get(month);
+      get();
       getCategorias();
       getDashboard();
 
@@ -104,12 +107,13 @@ export default function Receitas({ navigation, itens, addItem }) {
   );
 
   useEffect(() => {
-    get(month);
-  }, [month])
+    get();
+  }, [])
 
   async function getDashboard() {
+    const idUser = await AsyncStorage.getItem('id');
     try {
-      const res = await api.get('/dashboard');
+      const res = await api.get(`/dashboard/${idUser}`);
       setReceitaTotal(res.data[0].receitaMensal);
     } catch (err) {
       console.log(err.response.data);
@@ -117,8 +121,9 @@ export default function Receitas({ navigation, itens, addItem }) {
   }
 
   async function getCategorias() {
+    const idUser = await AsyncStorage.getItem('id');
     try {
-      const cat = await api.get('/categorias');
+      const cat = await api.get(`/categorias/${idUser}`);
       const catReceitas = cat.data.categorias.filter(cat => {
         return !cat.ctg_tipo;
       });
@@ -188,7 +193,7 @@ export default function Receitas({ navigation, itens, addItem }) {
   }
 
   async function post(data) {
-    console.log('??', data);
+    const idUser = await AsyncStorage.getItem('id');
     try {
       if (categorias.length == 1 || selectedCategoria == undefined) {
         data.receita_categoria = categorias[0].ctg_id;
@@ -205,7 +210,7 @@ export default function Receitas({ navigation, itens, addItem }) {
         text1: 'Receita Criada!',
         position: 'bottom'
       });
-      await api.post('/receitas', data);
+      await api.post(`/receitas/${idUser}`, data);
 
       get(month);
       getDashboard();
@@ -287,9 +292,9 @@ export default function Receitas({ navigation, itens, addItem }) {
                     <CardItem>
                       <View>
                         <TextCard>{r.receita_descricao}</TextCard>
-                        <TextCategory>{r.categoria.ctg_nome}</TextCategory>
-                        <TextCategory>{r.receita_data ? moment(r.receita_data).format('DD/MM') : moment(r.created_at
-                        ).format('DD/MM')}</TextCategory>
+                        <TextCategory>{r.ctg_nome}</TextCategory>
+                        <TextCategory>{r.receita_data ? moment(r.receita_data).format('DD/MM/YYYY') : moment(r.created_at
+                        ).format('DD/MM/YYYY')}</TextCategory>
                       </View>
                       <TextCash>
                         <TextMask
@@ -329,18 +334,18 @@ export default function Receitas({ navigation, itens, addItem }) {
                     color="rgb(4, 119, 196)"
                   />
                   <TextTitleName>{edit ? "Editar " : "Adicionar "}Receita</TextTitleName>
+                  <Texto>Categoria</Texto>
                   <Select>
-                    <Texto>Categoria</Texto>
                     <Picker
 
-                      style={{ height: 30, width: '100%', marginTop: 10, marginLeft: 0, fontSize: 24, }}
+                      style={{ height: 30, width: '100%', marginLeft: 0, fontSize: 27, paddingBottom: 20 }}
                       selectedValue={selectedCategoria}
                       onValueChange={(itemValue, itemIndex) =>
                         setSelectedCategoria(itemValue)
                       }>
 
                       {categorias.map((ctg) => (
-                        <Picker.Item key={ctg.ctg_id} label={ctg.ctg_nome} value={ctg.ctg_id} />
+                        <Picker.Item key={ctg.ctg_id} style={{fontSize: 20}} label={ctg.ctg_nome} value={ctg.ctg_id} />
                       ))}
 
                     </Picker>
@@ -367,15 +372,15 @@ export default function Receitas({ navigation, itens, addItem }) {
                     defaultValue={objectEdit ? objectEdit.receita_descricao : ""}
                   />
                   <Texto>Valor da Receita</Texto>
-                  <Select>
+                  <InputCash>
                     <TextInputMask
-                      style={{ fontSize: 25 }}
+                      style={{ fontSize: 21 }}
                       type={'money'}
                       value={money}
                       onChangeText={text => setMoney(text)}
                       ref={moneyRef}
                     />
-                  </Select>
+                  </InputCash>
                   {dateValue && <TextTitleName style={{ textAlign: 'center', marginBottom: 10 }}>{edit && !date ? moment(objectEdit.receita_data).format('DD/MM/YYYY') : dateValue}</TextTitleName>}
                   <Button
                     onPress={() => setShowDate(true)}
@@ -445,10 +450,11 @@ export default function Receitas({ navigation, itens, addItem }) {
                     <TouchableHighlight style={{ paddingBottom: 6 }} onPress={() => getEdit(r.receita_id)} activeOpacity={0.5} underlayColor="#dddd" key={r.receita_id}>
                       <CardItem>
                         <View>
+                          <TextHead>{r.receita_mes}</TextHead>
                           <TextCard>{r.receita_descricao}</TextCard>
-                          <TextCategory>{r.categoria.ctg_nome}</TextCategory>
-                          <TextCategory>{r.receita_data ? moment(r.receita_data).format('DD/MM') : moment(r.created_at
-                          ).format('DD/MM')}</TextCategory>
+                          <TextCategory>{r.ctg_nome}</TextCategory>
+                          <TextCategory>{r.receita_data ? moment(r.receita_data).format('DD/MM/YYYY') : moment(r.created_at
+                          ).format('DD/MM/YYYY')}</TextCategory>
                         </View>
                         <TextCash>
                           <TextMask
