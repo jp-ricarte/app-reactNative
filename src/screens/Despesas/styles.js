@@ -1,12 +1,13 @@
 import styled from "styled-components/native";
  
-export const Container = styled.View`
+export const Container = styled.SafeAreaView`
   display: flex;
   width: 100%;
   height: 100%;
   margin-top: 40%;
   background: #fff;
   margin-bottom: 5%;
+  
 `;
 
 export const Head = styled.View`

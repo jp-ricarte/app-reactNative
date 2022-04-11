@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { useForm, Controller } from "react-hook-form";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Picker } from '@react-native-picker/picker';
 import {
     Texto,
@@ -34,8 +35,10 @@ export default function Categorias({ navigation }) {
     const [loading, setLoading] = useState(false);
 
     async function get() {
+
         try {
-            const cat = await api.get('/categorias');
+            const idUser = await AsyncStorage.getItem('id');
+            const cat = await api.get(`/categorias/${idUser}`);
             const catReceitas = cat.data.categorias.filter(cat => {
                 return cat.ctg_tipo;
             });
@@ -46,7 +49,7 @@ export default function Categorias({ navigation }) {
             });
             setDataDespesa(catDespesas);
         } catch (err) {
-            console.log(err.response.data);
+            console.log(err);
         }
     }
 
@@ -57,11 +60,12 @@ export default function Categorias({ navigation }) {
     );
 
     async function post(data) {
+        const idUser = await AsyncStorage.getItem('id');
         setLoading(true);
         try {
             data.ctg_tipo = selectedLanguage;
             console.log(data)
-            await api.post('/categorias', data);
+            await api.post(`/categorias/${idUser}`, data);
             get();
             setModalVisible(false);
         } catch (error) {

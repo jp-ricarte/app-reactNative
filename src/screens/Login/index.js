@@ -96,7 +96,7 @@ export default function Login({ routes, navigation }) {
           AsyncStorage.setItem('email', data.email);
           AsyncStorage.setItem('senha', data.password);
           AsyncStorage.setItem('id', idString);
-          AsyncStorage.setItem('nome', response.data.data.username);
+          AsyncStorage.setItem('nome', response.data.username);
         } else {
           alert('E-mail ou senha inválidos!');
         }

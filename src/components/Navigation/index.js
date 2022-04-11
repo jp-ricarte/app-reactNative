@@ -10,6 +10,7 @@ import Configurações from "../../screens/Configurações";
 import Icon from "react-native-vector-icons/FontAwesome5";
 import Categorias from "../../screens/Categorias";
 import Toast from 'react-native-toast-message';
+import {} from 'react-native-svg'
 
 const Tab = createBottomTabNavigator();
 
@@ -32,9 +33,17 @@ const HomeTabs = ({ navigation }) => {
             } else if (route.name === 'Configurações') {
               iconName = 'cog';
             }
-            return <Icon name={iconName} size={size} color={color} />;
+            if (focused) {
+              return <Icon name={iconName} size={29} color={color} />;
+            }
+            else {
+              return <Icon name={iconName} size={25} color={color} />;
+            }
           },
           tabBarInactiveTintColor: 'gray',
+          tabBarStyle: {
+            height: 60
+          }
         })}
       >
         <Tab.Screen options={{ headerShown: false }} name="Home" component={Home} />

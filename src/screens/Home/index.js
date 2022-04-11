@@ -81,6 +81,15 @@ export default function Home({ navigation }) {
                                         <TextTitle style={styles.font}>Boa noite, <TextTitleName>{nome}!</TextTitleName></TextTitle>
                                     )}
                                 </Wellcome>
+                                <Wellcome style={{ marginTop: 0, paddingTop: 5 }}>
+                                    <Text style={styles.font}>Seu saldo nesse mês de <Text style={{ fontWeight: 'bold' }}>{mes}</Text> é:</Text>
+                                    {data.saldoResultado == 'Lucro' ? (
+                                        <TextTitle style={styles.font}><TextCash> <TextMask value={data.saldoMensal} type={'money'} /> </TextCash></TextTitle>
+
+                                    ) : (
+                                        <TextTitle style={styles.font}><TextCashRed>- <TextMask value={data.saldoMensal} type={'money'} /> </TextCashRed></TextTitle>
+                                    )}
+                                </Wellcome>
                                 <FlewRowCenter>
                                     <Wellcome style={{ marginTop: 0, paddingTop: 5 }}>
                                         <Text style={{ fontFamily: 'OpenSans_400Regular', textAlign: 'center' }}>Receita Mensal:</Text>
@@ -93,45 +102,35 @@ export default function Home({ navigation }) {
                                     </Wellcome>
                                 </FlewRowCenter>
 
-                                <Wellcome style={{ marginTop: 0, paddingTop: 5 }}>
-                                    <Text style={styles.font}>Seu saldo nesse mês de <Text style={{ fontWeight: 'bold' }}>{mes}</Text> é:</Text>
-                                    {data.saldoResultado == 'Lucro' ? (
-                                        <TextTitle style={styles.font}><TextCash> <TextMask value={data.saldoMensal} type={'money'} /> </TextCash></TextTitle>
-
-                                    ) : (
-                                        <TextTitle style={styles.font}><TextCashRed>- <TextMask value={data.saldoMensal} type={'money'} /> </TextCashRed></TextTitle>
-                                    )}
-                                </Wellcome>
                                 <CardReceitaDespesa>
-
                                     <View style={{ width: '90%', padding: 10, paddingTop: 0 }}>
 
-                                        <Text style={{ color: '#000' }}>Categoria mais lucrativa</Text>
+                                        <Text style={{ color: '#969696' }}>Categoria mais lucrativa</Text>
 
                                         <FlexRow>
-                                            <Text style={{ color: '#969696' }}>{data.categoriaMaisLucrativa.ctg_nome}</Text>
+                                            <Text style={{ color: '#000' }}>{data.categoriaMaisLucrativa.ctg_nome}</Text>
                                             <Text style={styles.font}><TextCash style={{ fontSize: 14 }}><TextMask value={data.categoriaMaisLucrativa.ctg_total} type={'money'} /></TextCash></Text>
                                         </FlexRow>
 
-                                        <Text style={{ color: '#000' }}>Maior Receita</Text>
+                                        <Text style={{ color: '#969696' }}>Maior Receita</Text>
 
                                         <FlexRow>
-                                            <Text style={{ color: '#969696' }}>{data.maiorReceita.receita_descricao}</Text>
+                                            <Text style={{ color: '#000' }}>{data.maiorReceita.receita_descricao}</Text>
                                             <Text style={styles.font}><TextCash style={{ fontSize: 14 }}><TextMask value={data.maiorReceita.receita_valor} type={'money'} /></TextCash></Text>
                                         </FlexRow>
                                     </View>
-
                                 </CardReceitaDespesa>
+                                
                                 <CardReceitaDespesa>
                                     <View style={{ width: '90%', padding: 10 }}>
-                                        <Text style={{ color: '#000', fontFamily: 'OpenSans_400Regular' }}>Categoria mais prejuízo</Text>
+                                        <Text style={{ color: '#969696', fontFamily: 'OpenSans_400Regular' }}>Categoria mais prejuízo</Text>
                                         <FlexRow>
-                                            <Text style={{ color: '#969696', fontFamily: 'OpenSans_400Regular' }}>{data.maiorDespesa.despesa_descricao}</Text>
+                                            <Text style={{ color: '#000', fontFamily: 'OpenSans_400Regular' }}>{data.maiorDespesa.despesa_descricao}</Text>
                                             <Text style={styles.font}><TextCashRed style={{ fontSize: 14 }}>- <TextMask value={data.maiorDespesa.despesa_valor} type={'money'} /></TextCashRed></Text>
                                         </FlexRow>
-                                        <Text style={{ color: '#000', fontFamily: 'OpenSans_400Regular' }}>Maior Despesa</Text>
+                                        <Text style={{ color: '#969696', fontFamily: 'OpenSans_400Regular' }}>Maior Despesa</Text>
                                         <FlexRow>
-                                            <Text style={{ color: '#969696', fontFamily: 'OpenSans_400Regular' }}>{data.maiorDespesa.despesa_descricao}</Text>
+                                            <Text style={{ color: '#000', fontFamily: 'OpenSans_400Regular' }}>{data.maiorDespesa.despesa_descricao}</Text>
                                             <Text style={styles.font}><TextCashRed style={{ fontSize: 14 }}>- <TextMask value={data.maiorDespesa.despesa_valor} type={'money'} /></TextCashRed></Text>
                                         </FlexRow>
                                     </View>
@@ -173,7 +172,6 @@ export default function Home({ navigation }) {
                                 stroke: "#ffa726"
                             }
                         }}
-                        bezier
                         style={{
                             marginVertical: 8,
                             borderRadius: 0
