@@ -125,7 +125,7 @@ export default function Receitas({ navigation, itens, addItem }) {
     try {
       const cat = await api.get(`/categorias/${idUser}`);
       const catReceitas = cat.data.categorias.filter(cat => {
-        return !cat.ctg_tipo;
+        return cat.ctg_tipo;
       });
       setCategorias(catReceitas);
 
