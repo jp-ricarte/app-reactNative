@@ -238,27 +238,6 @@ export default function Despesas({ navigation, itens, addItem }) {
             <TouchableHighlight style={{ borderRadius: 50 }} activeOpacity={0.5} underlayColor="#dddd" onPress={() => { setModalVisible(true); setEdit(false); setObjectEdit(null); setDateValue(); setMoney(0) }}>
               <Text><Icon name="add" size={30} color="rgba(4, 119, 196, 1)" /></Text>
             </TouchableHighlight>
-            <Picker
-              style={{ width: 140, }}
-              selectedValue={month}
-              onValueChange={(itemValue, itemIndex) =>
-                setMonth(itemValue)
-              }>
-
-              <Picker.Item key={1} label={'janeiro'} value={'janeiro'} />
-              <Picker.Item key={2} label={'fevereiro'} value={'fevereiro'} />
-              <Picker.Item key={3} label={'março'} value={'março'} />
-              <Picker.Item key={4} label={'abril'} value={'abril'} />
-              <Picker.Item key={5} label={'maio'} value={'maio'} />
-              <Picker.Item key={6} label={'junho'} value={'junho'} />
-              <Picker.Item key={7} label={'julho'} value={'julho'} />
-              <Picker.Item key={8} label={'agosto'} value={'agosto'} />
-              <Picker.Item key={9} label={'setembro'} value={'setembro'} />
-              <Picker.Item key={10} label={'outubro'} value={'outubro'} />
-              <Picker.Item key={11} label={'novembro'} value={'novembro'} />
-              <Picker.Item key={12} label={'dezembro'} value={'dezembro'} />
-
-            </Picker>
             <TouchableHighlight style={{ borderRadius: 50 }} activeOpacity={0.5} underlayColor="#dddd" onPress={() => setSearch(true)}>
               <Text><Icon name="search" size={30} color="rgba(4, 119, 196, 1)" /></Text>
             </TouchableHighlight>

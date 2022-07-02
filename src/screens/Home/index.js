@@ -1,13 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Text, View, TextInput, Button, Alert, Image, StyleSheet, ScrollView } from "react-native";
+import { Text, View, TextInput, Button, Alert, Image, StyleSheet, ScrollView, SafeAreaView } from "react-native";
 import { useFocusEffect } from '@react-navigation/native';
-import Icon from "react-native-vector-icons/FontAwesome5";
-import IconFontAwesome from "react-native-vector-icons/FontAwesome";
-import { useForm, Controller } from "react-hook-form";
+import Constants from 'expo-constants';
 import moment from 'moment';
 import { Dimensions } from 'react-native';
 import "moment/locale/pt-br";
-import * as Font from 'expo-font';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import api from "../../services/api";
 import { TextInputMask, TextMask } from 'react-native-masked-text';
@@ -63,7 +60,7 @@ export default function Home({ navigation }) {
     );
 
     return (
-        <ScrollView keyboardShouldPersistTaps='handled' contentContainerStyle={{ flexGrow: 1 }}>
+        <ScrollView style={{paddingTop: Platform.OS === 'ios' ? 0 : Constants.statusBarHeight}} keyboardShouldPersistTaps='handled' contentContainerStyle={{ flexGrow: 1 }}>
             <Container>
                 {data.map(data => (
                     <>
@@ -141,7 +138,7 @@ export default function Home({ navigation }) {
                         )}
                     </View>
 
-                <View>
+                <View style={styles.flex}>
                     <LineChart
                         data={{
                             labels: ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"],
@@ -151,14 +148,20 @@ export default function Home({ navigation }) {
                                 }
                             ]
                         }}
+                        yAxisLabel={'R$'}
+                        fromZero
                         width={Dimensions.get("window").width} // from react-native
                         height={220}
                         withVerticalLines={false}
                         chartConfig={{
+                            propsForHorizontalLabels:{
+                                fontSize: "10",
+                                x:"60"
+                            },
                             padding: 30,
                             backgroundColor: "#fff",
-                            backgroundGradientFrom: "#fb8c00",
-                            backgroundGradientTo: "#ffa726",
+                            backgroundGradientFrom: "#006FFB",
+                            backgroundGradientTo: "#006FFB",
                             decimalPlaces: 2, // optional, defaults to 2dp
                             color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
                             labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
@@ -189,5 +192,8 @@ const styles = StyleSheet.create({
     font: {
         fontFamily: 'OpenSans_400Regular'
     },
+    flex: {
+        display: "flex",
+    }
 
 });
