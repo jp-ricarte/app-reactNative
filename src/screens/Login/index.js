@@ -87,7 +87,6 @@ export default function Login({ routes, navigation }) {
     console.log("[dados enviadoa]", data);
     try {
       await api.post('/login', data).then((response) => {
-        console.log('aaaaaaaaaaaaaaa',response);
         if (response.data) {
           let idString = response.data.id.toString();
 
