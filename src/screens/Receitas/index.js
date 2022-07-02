@@ -203,13 +203,13 @@ export default function Receitas({ navigation, itens, addItem }) {
       const moneyUnmask = moneyRef?.current.getRawValue();
       data.receita_valor = moneyUnmask;
       data.receita_data = date;
-      setMoney(0);
-      setDate(new Date());
-      setDateValue();
       Toast.show({
         text1: 'Receita Criada!',
         position: 'bottom'
       });
+      setMoney(0);
+      setDate(new Date());
+      setDateValue();
       await api.post(`/receitas/${idUser}`, data);
 
       get(month);

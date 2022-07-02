@@ -202,13 +202,13 @@ export default function Despesas({ navigation, itens, addItem }) {
       const moneyUnmask = moneyRef?.current.getRawValue();
       data.despesa_valor = moneyUnmask;
       data.despesa_data = date;
-      setMoney(0);
-      setDate(new Date());
-      setDateValue();
       Toast.show({
         text1: 'Despesa Criada!',
         position: 'bottom'
       });
+      setMoney(0);
+      setDate(new Date());
+      setDateValue();
       await api.post(`/despesas/${idUser}`, data);
 
       get(month);
