@@ -65,7 +65,7 @@ export default function Login({ routes, navigation }) {
     React.useCallback(() => {
       getUser();
     }, [])
-);
+  );
 
 
   async function loginAuto(email, senha) {
@@ -77,7 +77,7 @@ export default function Login({ routes, navigation }) {
         });
         navigation.navigate('HomeTabs');
       }
-    } catch(err) {
+    } catch (err) {
       console.log(err);
     }
   }
@@ -91,7 +91,7 @@ export default function Login({ routes, navigation }) {
           let idString = response.data.id.toString();
 
           navigation.navigate('HomeTabs');
-          
+
           AsyncStorage.setItem('email', data.email);
           AsyncStorage.setItem('senha', data.password);
           AsyncStorage.setItem('id', idString);
@@ -101,6 +101,7 @@ export default function Login({ routes, navigation }) {
         }
       });
     } catch (err) {
+      alert('E-mail ou senha inválidos!');
       console.log(err.response.data);
     }
     setLoading(false);
@@ -111,67 +112,67 @@ export default function Login({ routes, navigation }) {
   }
 
   return (
-<>
-    {loadingStorage ? (
-      <Container></Container>
-    ) :(
-    <Container>
-      <Image source={require('../../images/ricarte.jpeg')} style={{ width: '75%', height: 130, resizeMode: 'stretch', marginBottom: 20 }} />
-      <Controller
-        control={control}
-        render={({ onChange, onBlur, value }) => (
-          <Email style={{
-            shadowColor: "#000",
-            shadowOffset: {
-                width: 0,
-                height: 2,
-            },
-            shadowOpacity: 0.23,
-            shadowRadius: 2.62,
-            
-            elevation: 4,
-        }}>
-            <Icon name="mail-outline" size={20} color="rgba(0, 0, 0, 1)" />
-            <TextInputStyled onBlur={onBlur} placeholder="E-mail" onChangeText={(value) => onChange(value)} value={value} />
-          </Email>
-        )}
-        name="email"
-        rules={{ required: true }}
-        defaultValue=""
-      />
-
-      <Controller
-        control={control}
-        render={({ onChange, onBlur, value }) => (
-          <Senha style={styles.shadow}>
-            <Icon name="lock" size={20} color="rgba(0, 0, 0, 1)" />
-            <TextInputStyled onBlur={onBlur} placeholder="senha" onChangeText={(value) => onChange(value)} value={value} secureTextEntry={hide ? true : false} />
-            <Icon onPress={hideHidePassword} name={hide ? "visibility-off" : "visibility"} size={24} color="rgba(0, 0, 0, 1)" />
-          </Senha>
-        )}
-        name="password"
-        rules={{ required: true }}
-        defaultValue=""
-      />
-      {loading ? (
-        <ActivityIndicator style={{ marginTop: 29 }} size="large" color="#0477C4" />
+    <>
+      {loadingStorage ? (
+        <Container></Container>
       ) : (
-        <ViewButton style={styles.shadow}>
-          <ButtonLogin title="Submit" onPress={handleSubmit(login)}>
-            <IconCommunity name="login" size={20} color="rgba(0, 0, 0, 1)" />
-            <TextLogin style={{color: '#000'}}> Entrar</TextLogin>
-          </ButtonLogin>
-        </ViewButton>
-      )}
-      {/* <Text>ou</Text>
+        <Container>
+          <Image source={require('../../images/ricarte.jpeg')} style={{ width: '75%', height: 130, resizeMode: 'stretch', marginBottom: 20 }} />
+          <Controller
+            control={control}
+            render={({ onChange, onBlur, value }) => (
+              <Email style={{
+                shadowColor: "#000",
+                shadowOffset: {
+                  width: 0,
+                  height: 2,
+                },
+                shadowOpacity: 0.23,
+                shadowRadius: 2.62,
+
+                elevation: 4,
+              }}>
+                <Icon name="mail-outline" size={20} color="rgba(0, 0, 0, 1)" />
+                <TextInputStyled onBlur={onBlur} placeholder="E-mail" onChangeText={(value) => onChange(value)} value={value} />
+              </Email>
+            )}
+            name="email"
+            rules={{ required: true }}
+            defaultValue=""
+          />
+
+          <Controller
+            control={control}
+            render={({ onChange, onBlur, value }) => (
+              <Senha style={styles.shadow}>
+                <Icon name="lock" size={20} color="rgba(0, 0, 0, 1)" />
+                <TextInputStyled onBlur={onBlur} placeholder="senha" onChangeText={(value) => onChange(value)} value={value} secureTextEntry={hide ? true : false} />
+                <Icon onPress={hideHidePassword} name={hide ? "visibility-off" : "visibility"} size={24} color="rgba(0, 0, 0, 1)" />
+              </Senha>
+            )}
+            name="password"
+            rules={{ required: true }}
+            defaultValue=""
+          />
+          {loading ? (
+            <ActivityIndicator style={{ marginTop: 29 }} size="large" color="#0477C4" />
+          ) : (
+            <ViewButton style={styles.shadow}>
+              <ButtonLogin title="Submit" onPress={handleSubmit(login)}>
+                <IconCommunity name="login" size={20} color="rgba(0, 0, 0, 1)" />
+                <TextLogin style={{ color: '#000' }}> Entrar</TextLogin>
+              </ButtonLogin>
+            </ViewButton>
+          )}
+          {/* <Text>ou</Text>
         <ViewButtonGoogle style={styles.shadow}>
           <ButtonLogin title="Submit" onPress={googleLogin}>
             <TextLogin style={{color: '#fff'}}> <IconFontAwesome name="google" size={20} color="rgba(255, 255, 255, 1)" /> Entrar com o Google</TextLogin>
           </ButtonLogin>
         </ViewButtonGoogle> */}
-    </Container>
+        </Container>
 
-    )}
+      )}
     </>
   );
 }
@@ -181,8 +182,8 @@ const styles = StyleSheet.create({
     shadowColor: "#000",
     shadowOpacity: 0.23,
     shadowRadius: 2.62,
-    
+
     elevation: 4,
   },
-  
+
 });

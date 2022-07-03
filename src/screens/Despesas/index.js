@@ -247,7 +247,7 @@ export default function Despesas({ navigation, itens, addItem }) {
 
         <ScrollView keyboardShouldPersistTaps='handled' contentContainerStyle={{ flexGrow: 1 }}>
 
-          <Container>
+          <Container style={styles.flex}>
             {loading ? (
               <>
                 <CardItem style={{ marginBottom: 6 }}>
@@ -464,5 +464,11 @@ const styles = StyleSheet.create({
   fontBold: {
     fontFamily: 'OpenSans_600SemiBold'
   },
+
+  flex: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center"
+  }
 
 });
