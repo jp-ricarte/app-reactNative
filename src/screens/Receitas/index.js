@@ -116,7 +116,11 @@ export default function Receitas({ navigation, itens, addItem }) {
       const res = await api.get(`/dashboard/${idUser}`);
       setReceitaTotal(res.data[0].receitaMensal);
     } catch (err) {
-      console.log(err.response.data);
+      if (err.response.data) {
+        console.log(err.response.data)
+      } else {
+        console.log(err);
+      }
     }
   }
 
@@ -249,7 +253,7 @@ export default function Receitas({ navigation, itens, addItem }) {
 
         <ScrollView keyboardShouldPersistTaps='handled' contentContainerStyle={{ flexGrow: 1 }}>
 
-          <Container>
+          <Container style={styles.flex}>
             {loading ? (
               <>
                 <CardItem style={{ marginBottom: 6 }}>
@@ -287,7 +291,7 @@ export default function Receitas({ navigation, itens, addItem }) {
                 ))
 
               ) : (
-                <Text>Não há receitas :(</Text>
+                <Text >Não há receitas :(</Text>
               )
             )}
             <ModalIten
@@ -466,5 +470,10 @@ const styles = StyleSheet.create({
   fontBold: {
     fontFamily: 'OpenSans_600SemiBold'
   },
+  flex: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center"
+  }
 
 });
