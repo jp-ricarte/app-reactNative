@@ -216,7 +216,7 @@ export default function Receitas({ navigation, itens, addItem }) {
       getDashboard();
       setModalVisible(false);
     } catch (error) {
-      console.log(error.response.data);
+      console.log(error);
     }
   }
 
