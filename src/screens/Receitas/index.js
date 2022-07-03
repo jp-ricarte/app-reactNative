@@ -116,11 +116,7 @@ export default function Receitas({ navigation, itens, addItem }) {
       const res = await api.get(`/dashboard/${idUser}`);
       setReceitaTotal(res.data[0].receitaMensal);
     } catch (err) {
-      if (err.response.data) {
-        console.log(err.response.data)
-      } else {
-        console.log(err);
-      }
+      console.log(err);
     }
   }
 
@@ -253,7 +249,7 @@ export default function Receitas({ navigation, itens, addItem }) {
 
         <ScrollView keyboardShouldPersistTaps='handled' contentContainerStyle={{ flexGrow: 1 }}>
 
-          <Container style={styles.flex}>
+          <Container>
             {loading ? (
               <>
                 <CardItem style={{ marginBottom: 6 }}>

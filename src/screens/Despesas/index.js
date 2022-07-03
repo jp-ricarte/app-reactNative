@@ -115,7 +115,8 @@ export default function Despesas({ navigation, itens, addItem }) {
       const res = await api.get(`/dashboard/${idUser}`);
       setDespesaTotal(res.data[0].despesaMensal);
     } catch (err) {
-      console.log(err.response.data);
+      console.log(err);
+
     }
   }
 
@@ -230,7 +231,6 @@ export default function Despesas({ navigation, itens, addItem }) {
           },
           shadowOpacity: 0.23,
           shadowRadius: 2.62,
-
           elevation: 4,
         }}>
           <TextHead><TextCash> <TextMask value={despesaTotal} type={'money'} /> </TextCash></TextHead>
@@ -242,12 +242,11 @@ export default function Despesas({ navigation, itens, addItem }) {
               <Text><Icon name="search" size={30} color="rgba(4, 119, 196, 1)" /></Text>
             </TouchableHighlight>
           </FlexRow>
-
         </Head>
 
         <ScrollView keyboardShouldPersistTaps='handled' contentContainerStyle={{ flexGrow: 1 }}>
 
-          <Container style={styles.flex}>
+          <Container>
             {loading ? (
               <>
                 <CardItem style={{ marginBottom: 6 }}>
@@ -323,7 +322,7 @@ export default function Despesas({ navigation, itens, addItem }) {
                       }>
 
                       {categorias.map((ctg) => (
-                        <Picker.Item key={ctg.ctg_id} style={{fontSize: 20}} label={ctg.ctg_nome} value={ctg.ctg_id} />
+                        <Picker.Item key={ctg.ctg_id} style={{ fontSize: 20 }} label={ctg.ctg_nome} value={ctg.ctg_id} />
                       ))}
 
                     </Picker>

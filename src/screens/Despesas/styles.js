@@ -4,7 +4,7 @@ export const Container = styled.SafeAreaView`
   display: flex;
   width: 100%;
   height: 100%;
-  margin-top: 40%;
+  margin-top: 30%;
   background: #fff;
   margin-bottom: 5%;
   
@@ -15,14 +15,14 @@ export const Head = styled.View`
   justify-content: center;
   width: 100%;
   background: #fff;
-  height: 21%;
+  height: 15%;
   position: absolute;
   z-index: 1;
 `;
 
 export const TextHead = styled.Text`
   color: #000;
-  margin-top: 30px;
+  margin-top: 8px;
   font-size: 16px;
   text-align: center;
   `;
